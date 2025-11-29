@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>BeautyBucket Admin</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<header class="site-header">
+  <div class="brand">
+    <h1>BeautyBucket Admin</h1>
+    <small>Manage products via Google Sheets</small>
+  </div>
+</header>
+
+<main style="padding:12px;max-width:900px;margin:auto">
+  <h2>Admin Instructions (No coding)</h2>
+  <ol>
+    <li>Create a Google Sheet using the provided template CSV files (products + dealers).</li>
+    <li>Fill product rows (ProductName, Category, Details, MRP, SellingPrice1pc, SellingPrice5pc, Stock, ImageURL).</li>
+    <li>From Google Sheets: File → Publish to web → choose the sheet and "Comma separated values (CSV)" → publish and copy the generated link.</li>
+    <li>Open the frontend <code>index.html</code> (hosted on GitHub Pages) and replace the PRODUCTS_CSV_URL in the script with your CSV export link:
+      <pre><code>https://docs.google.com/spreadsheets/d/YOUR_SHEET_ID/export?format=csv&gid=0</code></pre>
+    </li>
+    <li>To edit products, open the Google Sheet directly. Changes will reflect on the site within a minute (Google caching).</li>
+  </ol>
+
+  <h3>Dealer Quotations (sheet)</h3>
+  <p>Use the separate "dealers" sheet to add dealer-specific offers. The template includes formula columns to auto-calc Profit and Discount%.</p>
+
+  <p style="margin-top:18px"><a href="#" id="openTemplate" class="btn">Download CSV Templates</a></p>
+
+  <h3 style="margin-top:18px">Quick Links</h3>
+  <ul>
+    <li><strong>Host on GitHub Pages:</strong> Place the files from this ZIP into a repo and enable Pages in repo settings. See README for exact steps.</li>
+    <li><strong>WhatsApp number:</strong> The Buy button opens WhatsApp draft. Make sure your customers use the web or mobile app to complete the message.</li>
+  </ul>
+
+  <h3 style="margin-top:18px">Notes</h3>
+  <ul>
+    <li>No login is implemented: your team edits the Google Sheet directly.</li>
+    <li>To allow image uploads, host images somewhere (GitHub repo's /images folder or any image host) and add the public ImageURL in the sheet.</li>
+  </ul>
+</main>
+
+<script>
+// provide download links for templates
+document.getElementById('openTemplate').addEventListener('click', ()=>{
+  window.location.href = 'templates/products_template.csv';
+});
+</script>
+</body>
+</html>

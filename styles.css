@@ -1,21 +1,22 @@
-/* Simple responsive styles for BeautyBucket */
+/* styles.css — premium responsive */
 :root{--pink:#ff4da6;--accent:#d6336c;--bg:#fff8fb}
 *{box-sizing:border-box}
-body{font-family:Helvetica,Arial,sans-serif;margin:0;background:#fff}
+body{font-family:Inter,Helvetica,Arial,sans-serif;margin:0;background:#fff}
 .site-header{background:var(--pink);color:#fff;padding:14px;text-align:center}
 .site-header .brand h1{margin:0;font-size:20px}
-.main{display:flex;gap:12px;padding:12px}
+.header-sub{opacity:.95}
+.main{display:flex;gap:16px;padding:12px;max-width:1100px;margin:12px auto}
 .sidebar{width:220px}
 .category-list{list-style:none;padding:0;margin:0}
-.category-list li{padding:8px;background:#fff;border-radius:6px;margin-bottom:8px;cursor:pointer}
+.category-list li{padding:8px;background:#fff;border-radius:6px;margin-bottom:8px;cursor:pointer;border:1px solid #f0e6ee}
 .cat-item.active{background:var(--accent);color:#fff}
 .content{flex:1}
 .controls{margin-bottom:12px}
 #searchInput{width:100%;padding:10px;border-radius:8px;border:1px solid #ddd}
-.products.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px}
-.product-card{background:#fff;border-radius:8px;padding:10px;box-shadow:0 2px 8px rgba(0,0,0,0.06);display:flex;flex-direction:column}
+.products.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px}
+.product-card{background:#fff;border-radius:10px;padding:10px;box-shadow:0 6px 18px rgba(15,15,15,0.06);display:flex;flex-direction:column}
 .img-wrap{height:160px;display:flex;align-items:center;justify-content:center}
-.img-wrap img{max-width:100%;max-height:100%;object-fit:contain;border-radius:6px}
+.img-wrap img{max-width:100%;max-height:100%;object-fit:contain;border-radius:8px;background:#fff}
 .p-title{margin:6px 0 2px;font-size:16px}
 .p-cat{font-size:12px;color:#666}
 .p-details{font-size:13px;color:#444;margin:6px 0}
@@ -30,8 +31,8 @@ body{font-family:Helvetica,Arial,sans-serif;margin:0;background:#fff}
 .site-footer{text-align:center;padding:12px;color:#666;margin-top:12px;background:#fafafa}
 
 /* Responsive */
-@media (max-width:800px){
-  .main{flex-direction:column}
-  .sidebar{width:100%;order:2}
-  .content{order:1}
+@media (max-width:900px){
+  .main{flex-direction:column;padding:10px}
+  .sidebar{width:100%}
+  .products.grid{grid-template-columns:repeat(auto-fill,minmax(220px,1fr))}
 }

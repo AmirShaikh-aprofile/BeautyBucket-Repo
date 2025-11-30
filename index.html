@@ -2,76 +2,64 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width,initial-scale=1">
 <title>BeautyBucket — Shop Cosmetics</title>
 <style>
-  * { box-sizing: border-box; margin:0; padding:0; }
+  /* --- RESET + BASE --- */
+  * { box-sizing: border-box; margin: 0; padding: 0; }
   body { font-family: Arial, sans-serif; background: #f9f9f9; color: #333; }
   a, button { text-decoration: none; border: none; background: none; cursor: pointer; }
+  
+  /* --- HEADER --- */
+  .site-header { background: #ff4da6; color: #fff; padding: 16px; text-align: center; }
+  .site-header h1 { margin:0; font-size: 24px; }
+  .site-header .sub { font-size: 14px; opacity: 0.9; margin-top: 4px; }
 
-  .site-header { background: #ff4da6; color: #fff; padding:16px; text-align:center; }
-  .site-header h1 { margin:0; font-size:24px; }
-  .site-header .sub { font-size:14px; opacity:0.9; margin-top:4px; }
+  /* --- FILTER / SORT TOGGLE BAR --- */
+  .top-bar { display: flex; align-items: center; justify-content: space-between; background: #fff; padding: 10px 16px; border-bottom: 1px solid #ddd; position: sticky; top: 0; z-index: 100; }
+  .filter-toggle { font-size: 20px; cursor: pointer; }
+  #pincodeInput { padding: 6px 8px; border:1px solid #ccc; border-radius:4px; width: 120px; }
+  #pincodeMessage { font-size:13px; color:#555; margin-left: 8px; }
+  #searchInput { flex:1; margin: 0 12px; padding: 8px 10px; border:1px solid #ccc; border-radius:4px; }
 
-  .top-bar { display:flex; align-items:center; justify-content:space-between; background:#fff; padding:10px 16px; border-bottom:1px solid #ddd; position: sticky; top:0; z-index:100; }
-  .filter-toggle { font-size:20px; cursor:pointer; }
-  #searchInput { flex:1; margin: 0 12px; padding:8px 10px; border:1px solid #ccc; border-radius:4px; }
-  #pincodeInput { padding:6px 8px; border:1px solid #ccc; border-radius:4px; width:120px; }
-  #pincodeMessage { font-size:13px; color:#555; margin-left:8px; }
-
-  .filter-panel { position: fixed; top:0; left:0; height:100%; width:260px; background:#fff; box-shadow:2px 0 12px rgba(0,0,0,0.1); transform: translateX(-300px); transition: transform 0.3s ease; padding:16px; z-index:200; overflow-y:auto; }
+  /* --- SIDEBAR FILTER PANEL (initially hidden) --- */
+  .filter-panel { position: fixed; top: 0; left: 0; height:100%; width: 260px; background: #fff; box-shadow: 2px 0 12px rgba(0,0,0,0.1); transform: translateX(-300px); transition: transform 0.3s ease; padding: 16px; z-index: 200; overflow-y: auto; }
   .filter-panel.open { transform: translateX(0); }
-  .filter-panel h4 { margin-bottom:8px; font-size:16px; }
-  .filter-panel .section { margin-bottom:20px; }
-  .filter-panel label { display:block; margin-bottom:6px; font-size:14px; cursor:pointer; }
+  .filter-panel h4 { margin-bottom: 8px; font-size: 16px; }
+  .filter-panel .section { margin-bottom: 20px; }
+  .filter-panel label { display: block; margin-bottom: 6px; font-size: 14px; cursor: pointer; }
 
-  .overlay { position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.4); opacity:0; visibility:hidden; transition: opacity 0.3s; z‑index:150; }
-  .overlay.show { opacity:1; visibility:visible; }
+  .overlay { position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.4); opacity: 0; visibility: hidden; transition: opacity 0.3s; z-index: 150; }
+  .overlay.show { opacity: 1; visibility: visible; }
 
-  .container { max-width:1100px; margin:0 auto; padding:0 16px; }
-  .products { display:grid; grid-template-columns: repeat(auto-fit, minmax(260px,1fr)); gap:16px; margin-bottom:40px; }
+  /* --- PRODUCT GRID & CARDS --- */
+  .container { max-width: 1100px; margin: 0 auto; padding: 0 16px; }
+  .products { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px,1fr)); gap: 16px; margin-bottom: 40px; }
 
-  .product-card { background:#fff; border-radius:8px; box-shadow:0 4px 12px rgba(0,0,0,0.06); overflow:hidden; display:flex; flex-direction: column; transition: transform 0.15s ease, box-shadow 0.15s ease; position: relative; }
-  .product-card:hover { transform: translateY(-4px); box-shadow:0 8px 20px rgba(0,0,0,0.1); }
+  .product-card { background: #fff; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.06); overflow: hidden; display: flex; flex-direction: column; transition: transform 0.15s ease, box-shadow 0.15s ease; }
+  .product-card:hover { transform: translateY(-4px); box-shadow: 0 8px 20px rgba(0,0,0,0.1); }
 
-  .card-main { display: flex; flex-direction: column; }
-  .product-card img { width:100%; height:auto; object-fit: contain; background:#fff; }
+  .product-card .card-main { display: flex; flex-direction: column; }
+  .product-card img { width: 100%; height: auto; object-fit: contain; background: #fff; }
 
-  .p-body { padding:12px; display:flex; flex-direction:column; flex:1; }
-  .p-title { font-size:18px; margin-bottom:6px; color:#222; }
-  .p-cat { font-size:13px; color:#555; margin-bottom:8px; }
-  .p-details { font-size:14px; color:#444; margin-bottom:12px; flex:1; }
+  .p-body { padding: 12px; display: flex; flex-direction: column; flex:1; }
+  .p-title { font-size: 18px; margin-bottom: 6px; color: #222; }
+  .p-cat { font-size: 13px; color: #555; margin-bottom: 8px; }
+  .p-details { font-size: 14px; color: #444; margin-bottom: 12px; flex:1; }
 
   .prices { margin-top: auto; }
-  .prices .mrp { font-size:14px; color:#888; text-decoration: line-through; }
-  .prices .sp { font-size:16px; font-weight:bold; color:#000; margin-top:4px; }
-  .prices .discount { font-size:14px; color:#d10000; margin-top:2px; }
+  .prices .mrp { font-size: 14px; color: #888; text-decoration: line-through; }
+  .prices .sp { font-size: 16px; font-weight: bold; color: #000; margin-top: 4px; }
+  .prices .discount { font-size: 14px; color: #d10000; margin-top: 2px; }
 
-  .btn-buy { background:#25D366; color:#fff; padding:10px; border-radius:6px; font-size:15px; text-align:center; margin-top:12px; }
+  .btn-buy { background: #25D366; color: #fff; padding: 10px; border-radius: 6px; font-size: 15px; text-align: center; margin-top: 12px; }
+  .stock { font-size: 13px; margin-top: 8px; }
 
-  /* out-of-stock overlay styling */
-  .out-of-stock-overlay {
-    position: absolute;
-    top: 8px;
-    left: 8px;
-    background: rgba(255,0,0,0.8);
-    color: #fff;
-    padding: 4px 6px;
-    font-size: 12px;
-    font-weight: bold;
-    border-radius: 4px;
-    z-index: 10;
-  }
-
-  /* MOBILE: horizontal card: image left, details right */
+  /* --- mobile: horizontal card layout --- */
   @media (max-width: 600px) {
     .product-card { flex-direction: row; }
     .product-card img { width: 100px; height: auto; object-fit: contain; margin: 8px; }
     .p-body { padding: 8px; }
-    .prices .sp { font-size:14px; }
-    .prices .mrp { font-size:13px; }
-    .prices .discount { font-size:12px; }
-    .btn-buy { padding:8px; font-size:14px; }
   }
 </style>
 </head>
@@ -90,16 +78,15 @@
 </div>
 
 <div class="filter-panel" id="filterPanel">
-  <!-- filter UI as before -->
   <div class="section">
     <h4>Category</h4>
     <div id="categoryFilters"></div>
   </div>
   <div class="section">
     <h4>Sort By</h4>
-    <label><input type="radio" name="sort" value="none" checked> Default</label><br>
-    <label><input type="radio" name="sort" value="price-asc"> Price: Low → High</label><br>
-    <label><input type="radio" name="sort" value="price-desc"> Price: High → Low</label><br>
+    <label><input type="radio" name="sort" value="none" checked> Default</label>
+    <label><input type="radio" name="sort" value="price-asc"> Price: Low → High</label>
+    <label><input type="radio" name="sort" value="price-desc"> Price: High → Low</label>
     <label><input type="radio" name="sort" value="discount-desc"> Discount: High → Low</label>
   </div>
   <div class="section">
@@ -121,30 +108,39 @@
   const LOCAL_PINCODES = ["411001","411002","411003","411028","411060","412308","412307","411036","411013"];
 
   let allProducts = [];
-  let filters = { categories: new Set(), sort: 'none', search:'', inStockOnly: false };
+  let filters = {
+    categories: new Set(),
+    sort: 'none',
+    search: '',
+    inStockOnly: false
+  };
 
   function parseCSV(text) {
     text = text.replace(/^\uFEFF/, '').trim();
-    const rows = []; let cur=['']; let col=0; let inQuotes=false;
+    const rows = []; let cur = ['']; let col=0; let inQuotes = false;
     for (let i = 0; i < text.length; i++) {
       const ch = text[i], nxt = text[i+1];
       if (ch === '"') {
         if (inQuotes && nxt === '"') { cur[col] += '"'; i++; continue; }
-        inQuotes = !inQuotes; continue;
+        inQuotes = !inQuotes;
+        continue;
       }
-      if (!inQuotes && ch === ',') { col++; cur[col] = ''; continue; }
+      if (!inQuotes && ch === ',') { col++; cur[col]=''; continue; }
       if (!inQuotes && (ch === '\n' || ch === '\r')) {
-        rows.push(cur); cur=['']; col=0;
-        if (ch==='\\r' && nxt==='\\n') i++;
+        rows.push(cur);
+        cur = ['']; col = 0;
+        if (ch === '\r' && nxt === '\n') i++;
         continue;
       }
       cur[col] += ch;
     }
-    if (cur.length > 1 || cur[0].trim()!=='') rows.push(cur);
+    if (cur.length > 1 || cur[0].trim() !== '') rows.push(cur);
     const headers = rows.shift().map(h => h.trim());
     return rows.map(r => {
       const o = {};
-      for (let i=0; i<headers.length; i++) o[headers[i]] = (r[i]||'').trim();
+      for (let i =0;i<headers.length;i++){
+        o[headers[i]] = (r[i]||'').trim();
+      }
       return o;
     });
   }
@@ -157,12 +153,13 @@
       initFilters();
       renderProducts();
     } catch (err) {
-      console.error('CSV load error', err);
+      console.error('Failed to load CSV', err);
       document.getElementById('productList').innerHTML = '<div style="padding:20px; color:#c00;">Failed to load products.</div>';
     }
   }
 
   function initFilters(){
+    // categories
     const cats = Array.from(new Set(allProducts.map(p => (p.Category||'').trim()).filter(Boolean)));
     const container = document.getElementById('categoryFilters');
     cats.forEach(c => {
@@ -177,18 +174,25 @@
       });
     });
 
+    // sort radio
     document.querySelectorAll('input[name="sort"]').forEach(r => {
       r.addEventListener('change', e => {
-        filters.sort = e.target.value; renderProducts();
+        filters.sort = e.target.value;
+        renderProducts();
       });
     });
 
+    // search
     document.getElementById('searchInput').addEventListener('input', e => {
-      filters.search = e.target.value.trim().toLowerCase(); renderProducts();
+      filters.search = e.target.value.trim().toLowerCase();
+      renderProducts();
     });
 
+    // clear
     document.getElementById('clearFilters').addEventListener('click', () => {
-      filters = { categories: new Set(), sort: 'none', search:'', inStockOnly: false };
+      filters.categories.clear();
+      filters.sort = 'none';
+      filters.search = '';
       document.getElementById('searchInput').value = '';
       document.querySelectorAll('#categoryFilters input[type=checkbox]').forEach(cb => cb.checked = false);
       document.querySelector('input[name="sort"][value="none"]').checked = true;
@@ -209,14 +213,15 @@
       return true;
     });
 
+    // Sort
     if (filters.sort === 'price-asc' || filters.sort === 'price-desc') {
-      items.sort((a,b) => {
+      items = items.sort((a,b) => {
         const pa = parseFloat(a.SellingPrice1pc) || 0;
         const pb = parseFloat(b.SellingPrice1pc) || 0;
         return filters.sort === 'price-asc' ? pa - pb : pb - pa;
       });
     } else if (filters.sort === 'discount-desc') {
-      items.sort((a,b) => {
+      items = items.sort((a,b) => {
         const da = parseFloat(a.Discount1pcPercent) || 0;
         const db = parseFloat(b.Discount1pcPercent) || 0;
         return db - da;
@@ -238,16 +243,9 @@
 
       const card = document.createElement('div');
       card.className = 'product-card';
-      let overlayBadge = '';
-      if (!inStock) {
-        overlayBadge = `<div class="out-of-stock-overlay">Out of Stock</div>`;
-      }
       card.innerHTML = `
         <div class="card-main">
-          <div style="position: relative; flex-shrink:0;">
-            <img src="${p.ImageURL || 'images/placeholder.png'}" alt="${p.ProductName}" onerror="this.src='images/placeholder.png'">
-            ${overlayBadge}
-          </div>
+          <img src="${p.ImageURL || 'images/placeholder.png'}" alt="${p.ProductName}" onerror="this.src='images/placeholder.png'">
           <div class="p-body">
             <h4 class="p-title">${p.ProductName || ''}</h4>
             <div class="p-cat">${p.Category || ''}</div>
@@ -260,6 +258,7 @@
               ${ d5 ? `<div class="discount">${d5}</div>` : '' }
             </div>
             <button class="btn-buy" onclick="buyWhatsApp('${encodeURIComponent(p.ProductName)}')">Buy via WhatsApp</button>
+            <div class="stock">${ inStock ? 'In stock' : 'Out of stock' }</div>
           </div>
         </div>
       `;
@@ -274,6 +273,7 @@
     window.open(`https://wa.me/918149520594?text=${encodeURIComponent(msg)}`, '_blank');
   }
 
+  // filter panel toggle
   const fp = document.getElementById('filterPanel');
   const overlay = document.getElementById('overlay');
   document.querySelector('.filter-toggle').addEventListener('click', () => {
@@ -285,6 +285,7 @@
     overlay.classList.remove('show');
   });
 
+  // pincode message display
   document.getElementById('pincodeInput').addEventListener('input', e => {
     const pin = e.target.value.trim();
     const msgEl = document.getElementById('pincodeMessage');

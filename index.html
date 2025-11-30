@@ -10,7 +10,7 @@
 .header-sub { font-size:13px; opacity:.95; }
 .p-body { padding: 8px 6px; display:flex; flex-direction:column; gap:8px; }
 .p-title { font-size:16px; margin:0; color:#222; }
-.products .product-card { transition: transform .12s ease, box-shadow .12s ease; }
+.products .product-card { transition: transform .12s ease, box-shadow .12s.ease; }
 .products .product-card:hover { transform: translateY(-4px); box-shadow: 0 6px 20px rgba(0,0,0,.08); }
 .badge { display:inline-block; min-width:60px; text-align:center; }
 .empty { padding:28px; text-align:center; color:#666; }
@@ -40,7 +40,6 @@
     <div class="controls">
       <input id="searchInput" placeholder="Search products..." />
     </div>
-
     <div id="productList" class="products grid"></div>
   </section>
 </main>
@@ -50,62 +49,53 @@
 </footer>
 
 <script>
-/* ---------------- CONFIG ----------------
-   Replace only if you ever publish a different Google Sheet.
-   This is the CSV link you posted earlier (works).
-*/
-const PRODUCTS_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQA2pIOTPv2AVnMSWtlKLJeSXQXxTllgHn2gGYcdd_ZbHARLmclz_OXy009Aw9hJqgpc-RXIk_HXkK4/pub?gid=0&single=true&output=csv";
+/* ---------------- CONFIG ---------------- */
+const PRODUCTS_CSV_URL =
+  "https://docs.google.com/spreadsheets/d/e/2PACX-1vQA2pIOTPv2AVnMSWtlKLJeSXQXxTllgHn2gGYcdd_ZbHARLmclz_OXy009Aw9hJqgpc-RXIk_HXkK4/pub?gid=125100016&single=true&output=csv";
 
-/* Local delivery pincodes (edit if needed) */
-const LOCAL_PINCODES = ["411001","411002","411003"]; // example list
-const CITY_PREFIX = "411"; // pincodes starting with this are treated as local/city
+const LOCAL_PINCODES = ["411001","411002","411003"];
+const CITY_PREFIX = "411";
 
-/* ===== CSV parsing helper (handles commas inside quotes) ===== */
+/* ===== CSV parser ===== */
 function parseCSV(text) {
-  // Trim BOM and trailing empty lines
   text = text.replace(/^\uFEFF/, '').trim();
   if (!text) return [];
-  // Parse with a simple state machine to handle quoted commas/newlines
   const rows = [];
-  let current = [''], i = 0, col = 0, inQuotes = false;
-  for (let c = 0; c < text.length; c++) {
-    const ch = text[c];
-    const next = text[c+1];
-    if (ch === '"' ) {
-      if (inQuotes && next === '"') { // escaped quote
-        current[col] += '"'; c++; continue;
-      }
-      inQuotes = !inQuotes;
-      continue;
+  let current = [''], col = 0, inQuotes = false;
+  for (let i = 0; i < text.length; i++) {
+    const ch = text[i], next = text[i+1];
+    if (ch === '"') {
+      if (inQuotes && next === '"') { current[col] += '"'; i++; continue; }
+      inQuotes = !inQuotes; continue;
     }
     if (!inQuotes && ch === ',') { col++; current[col] = ''; continue; }
-    if (!inQuotes && (ch === '\n' || (ch === '\r' && text[c+1] === '\n'))) {
+    if (!inQuotes && (ch === '\n' || ch === '\r')) {
       rows.push(current);
       current = ['']; col = 0;
-      if (ch === '\r' && text[c+1] === '\n') c++;
+      if (ch === '\r' && next === '\n') i++;
       continue;
     }
     current[col] += ch;
   }
-  // push last
-  if (current && (current.length>1 || (current[0] && current[0].trim()!==''))) rows.push(current);
-  // first row headers
+  if (current && (current.length > 1 || current[0].trim() !== '')) rows.push(current);
+
   const headers = rows.shift().map(h => h.trim());
-  const objs = rows.map(r => {
+  return rows.map(r => {
     const obj = {};
     for (let i=0;i<headers.length;i++) obj[headers[i]] = (r[i]||'').trim();
     return obj;
   });
-  return objs;
 }
 
-/* ===== helpers ===== */
-function formatPrice(v){ if(v===undefined||v==='') return '—'; const n=parseFloat((''+v).replace(/[^0-9.\-]/g,'')); return isNaN(n)?'—':'₹'+n.toFixed(2); }
-function percent(a,b){ a=parseFloat(a)||0; b=parseFloat(b)||0; if(!a) return '0.00'; return (((a-b)/a)*100).toFixed(2); }
+function formatPrice(v){
+  if(v===undefined||v==='') return '—';
+  const n=parseFloat((''+v).replace(/[^0-9.\-]/g,'')); 
+  return isNaN(n)?'—':'₹'+n.toFixed(2);
+}
 
-/* ===== renderers ===== */
 let allProducts = [];
 
+/* ===== Category Renderer ===== */
 function renderCategories(){
   const cats = Array.from(new Set(allProducts.map(p => (p.Category||'Uncategorized').trim() )));
   const ul = document.getElementById('categoryList');
@@ -113,8 +103,13 @@ function renderCategories(){
   const liAll = document.createElement('li');
   liAll.textContent = 'All Products';
   liAll.className = 'cat-item active';
-  liAll.onclick = () => { document.querySelectorAll('.cat-item').forEach(e=>e.classList.remove('active')); liAll.classList.add('active'); renderProducts(allProducts); };
+  liAll.onclick = () => {
+    document.querySelectorAll('.cat-item').forEach(e=>e.classList.remove('active'));
+    liAll.classList.add('active');
+    renderProducts(allProducts);
+  };
   ul.appendChild(liAll);
+
   cats.forEach(c => {
     const li = document.createElement('li');
     li.textContent = c;
@@ -122,135 +117,12 @@ function renderCategories(){
     li.onclick = () => {
       document.querySelectorAll('.cat-item').forEach(e=>e.classList.remove('active'));
       li.classList.add('active');
-      renderProducts(allProducts.filter(p => (p.Category||'').toLowerCase().trim() === c.toLowerCase().trim()));
+      renderProducts(allProducts.filter(p =>
+        (p.Category||'').toLowerCase().trim() === c.toLowerCase().trim()
+      ));
     };
     ul.appendChild(li);
   });
 }
 
-function renderProducts(list) {
-  const container = document.getElementById('productList');
-  container.innerHTML = '';
-  if (!list || list.length === 0) {
-    container.innerHTML = '<div class="empty">No products found</div>';
-    return;
-  }
-
-  list.forEach(p => {
-    if (!p.ProductName || p.ProductName.trim()==='') return;
-    const mrp = parseFloat((p.MRP||'') .toString().replace(/[^0-9.\-]/g,'')) || 0;
-    const sp1 = parseFloat((p.SellingPrice1pc||'').toString().replace(/[^0-9.\-]/g,'')) || 0;
-    const sp5 = parseFloat((p.SellingPrice5pc||'').toString().replace(/[^0-9.\-]/g,'')) || 0;
-    const stock = parseInt(p.Stock||0) || 0;
-    const d1 = percent(mrp, sp1);
-    const d5 = percent(mrp, sp5);
-
-    const card = document.createElement('div');
-    card.className = 'product-card';
-    card.innerHTML = `
-      <div style="display:flex;gap:12px;align-items:flex-start">
-        <div class="img-wrap" style="width:140px;height:140px;flex-shrink:0">
-          <img src="${(p.ImageURL||'images/placeholder.png')}" alt="${p.ProductName || ''}" style="max-width:100%;max-height:100%;object-fit:contain;border-radius:8px" onerror="this.src='images/placeholder.png'"/>
-        </div>
-        <div class="p-body" style="flex:1">
-          <div style="display:flex;justify-content:space-between;align-items:start">
-            <div>
-              <h4 class="p-title">${p.ProductName||''}</h4>
-              <div class="p-cat" style="color:#666;font-size:13px">${p.Category||''}</div>
-            </div>
-            <div style="text-align:right">
-              ${stock > 0 ? `<div style="color:#2b7a0b;font-weight:700">In stock</div>` : `<div class="out">Out of stock</div>`}
-            </div>
-          </div>
-
-          <div class="p-details" style="color:#444;font-size:13px">${p.Details||''}</div>
-
-          <div class="prices" style="margin-top:8px">
-            <div><strike style="color:#888;margin-right:6px">${formatPrice(p.MRP)}</strike></div>
-            <div style="margin-top:6px">
-              <span class="price" style="font-weight:800;font-size:16px">${formatPrice(p.SellingPrice1pc)}</span>
-              <span class="badge" style="background:#d0f0c0;color:#2b7a0b;padding:4px 8px;border-radius:6px;margin-left:8px">${d1}% off</span>
-            </div>
-            <div style="margin-top:6px;font-size:13px;color:#444">5 pcs: <strong>${formatPrice(p.SellingPrice5pc)}</strong> <span class="badge-small" style="background:#d0f0c0;color:#2b7a0b;padding:2px 6px;border-radius:6px;margin-left:8px">${d5}% off</span></div>
-          </div>
-
-          <div style="margin-top:10px">
-            <button class="btn" style="padding:8px 12px" onclick="buyWhatsApp('${encodeURIComponent(p.ProductName||'')}', ${p.SellingPrice1pc||0})">Buy via WhatsApp</button>
-          </div>
-        </div>
-      </div>
-    `;
-    container.appendChild(card);
-  });
-}
-
-/* ===== WhatsApp flow with pincode logic ===== */
-function buyWhatsApp(productEncoded, sellingPrice) {
-  const product = decodeURIComponent(productEncoded || '');
-  const pincode = (document.getElementById('pincodeInput')||{value:''}).value.trim();
-  let deliveryMsg = '';
-  if (pincode) {
-    if (LOCAL_PINCODES.includes(pincode)) deliveryMsg = 'Free delivery.';
-    else if (pincode.startsWith(CITY_PREFIX)) deliveryMsg = 'Porter service charges applicable.';
-    else deliveryMsg = 'Delivery charges applicable.';
-  } else {
-    deliveryMsg = 'Please provide pincode for delivery info.';
-  }
-  const msg = `Hi, I want to buy *${product}* (Price: ₹${sellingPrice}).\nPincode: ${pincode || '-'}\n${deliveryMsg}\nName: \nAddress: `;
-  const wa = `https://wa.me/?text=${encodeURIComponent(msg)}`;
-  window.open(wa, '_blank');
-}
-
-/* ===== load CSV and wire up search/pincode UI ===== */
-async function loadProductsFromCsv() {
-  try {
-    const res = await fetch(PRODUCTS_CSV_URL);
-    if (!res.ok) throw new Error('CSV fetch failed: ' + res.status);
-    const text = await res.text();
-    const rows = parseCSV(text);
-    // Map flexible header names to expected keys (case-insensitive)
-    allProducts = rows.map(r => {
-      const normalized = {};
-      for (const k in r) normalized[k.trim()] = r[k];
-      return {
-        ProductName: normalized['ProductName'] || normalized['Name'] || normalized['product_name'] || '',
-        Category: normalized['Category'] || normalized['category'] || '',
-        Details: normalized['Details'] || normalized['details'] || '',
-        MRP: normalized['MRP'] || normalized['mrp'] || '',
-        SellingPrice1pc: normalized['SellingPrice1pc'] || normalized['selling_price_1pc'] || '',
-        SellingPrice5pc: normalized['SellingPrice5pc'] || normalized['selling_price_5pc'] || '',
-        Stock: normalized['Stock'] || normalized['stock'] || '0',
-        ImageURL: normalized['ImageURL'] || normalized['image_url'] || normalized['Image'] || ''
-      };
-    });
-
-    renderCategories();
-    renderProducts(allProducts);
-  } catch (err) {
-    console.error(err);
-    document.getElementById('productList').innerHTML = '<div class="empty">Failed to load products. Check published sheet CSV URL.</div>';
-  }
-}
-
-/* search */
-document.getElementById('searchInput').addEventListener('input', e => {
-  const q = (e.target.value||'').trim().toLowerCase();
-  const filtered = allProducts.filter(p => ((p.ProductName||'') + ' ' + (p.Details||'')).toLowerCase().includes(q));
-  renderProducts(filtered);
-});
-
-/* pincode message update */
-document.getElementById('pincodeInput').addEventListener('input', e => {
-  const pin = e.target.value.trim();
-  const msgEl = document.getElementById('pincodeMessage');
-  if (!pin) { msgEl.textContent = ''; return; }
-  if (LOCAL_PINCODES.includes(pin)) msgEl.textContent = 'Free delivery for this pincode.';
-  else if (pin.startsWith(CITY_PREFIX)) msgEl.textContent = 'Porter service charges for Pune.';
-  else msgEl.textContent = 'Delivery charges applicable for this pincode.';
-});
-
-/* initialize */
-loadProductsFromCsv();
-</script>
-</body>
-</html>
+/* ===== Product Rend*

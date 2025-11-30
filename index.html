@@ -17,4 +17,284 @@
   .filter-toggle { font-size:20px; cursor:pointer; }
   #searchInput { flex:1; margin: 0 12px; padding:8px 10px; border:1px solid #ccc; border-radius:4px; }
   #pincodeInput { padding:6px 8px; border:1px solid #ccc; border-radius:4px; width:120px; }
-  #pincodeMessage { f
+  #pincodeMessage { font-size:13px; color:#555; margin-left:8px; }
+
+  .filter-panel { position: fixed; top:0; left:0; height:100%; width:260px; background:#fff; box-shadow:2px 0 12px rgba(0,0,0,0.1); transform: translateX(-300px); transition: transform 0.3s ease; padding:16px; z-index:200; overflow-y:auto; }
+  .filter-panel.open { transform: translateX(0); }
+  .filter-panel h4 { margin-bottom:8px; font-size:16px; }
+  .filter-panel .section { margin-bottom:20px; }
+  .filter-panel label { display:block; margin-bottom:6px; font-size:14px; cursor:pointer; }
+
+  .overlay { position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.4); opacity:0; visibility:hidden; transition: opacity 0.3s; z‑index:150; }
+  .overlay.show { opacity:1; visibility:visible; }
+
+  .container { max-width:1100px; margin:0 auto; padding:0 16px; }
+  .products { display:grid; grid-template-columns: repeat(auto-fit, minmax(260px,1fr)); gap:16px; margin-bottom:40px; }
+
+  .product-card { background:#fff; border-radius:8px; box-shadow:0 4px 12px rgba(0,0,0,0.06); overflow:hidden; display:flex; flex-direction: column; transition: transform 0.15s ease, box-shadow 0.15s ease; position: relative; }
+  .product-card:hover { transform: translateY(-4px); box-shadow:0 8px 20px rgba(0,0,0,0.1); }
+
+  .card-main { display: flex; flex-direction: column; }
+  .product-card img { width:100%; height:auto; object-fit: contain; background:#fff; }
+
+  .p-body { padding:12px; display:flex; flex-direction:column; flex:1; }
+  .p-title { font-size:18px; margin-bottom:6px; color:#222; }
+  .p-cat { font-size:13px; color:#555; margin-bottom:8px; }
+  .p-details { font-size:14px; color:#444; margin-bottom:12px; flex:1; }
+
+  .prices { margin-top: auto; }
+  .prices .mrp { font-size:14px; color:#888; text-decoration: line-through; }
+  .prices .sp { font-size:16px; font-weight:bold; color:#000; margin-top:4px; }
+  .prices .discount { font-size:14px; color:#d10000; margin-top:2px; }
+
+  .btn-buy { background:#25D366; color:#fff; padding:10px; border-radius:6px; font-size:15px; text-align:center; margin-top:12px; }
+
+  /* out-of-stock overlay styling */
+  .out-of-stock-overlay {
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    background: rgba(255,0,0,0.8);
+    color: #fff;
+    padding: 4px 6px;
+    font-size: 12px;
+    font-weight: bold;
+    border-radius: 4px;
+    z-index: 10;
+  }
+
+  /* MOBILE: horizontal card: image left, details right */
+  @media (max-width: 600px) {
+    .product-card { flex-direction: row; }
+    .product-card img { width: 100px; height: auto; object-fit: contain; margin: 8px; }
+    .p-body { padding: 8px; }
+    .prices .sp { font-size:14px; }
+    .prices .mrp { font-size:13px; }
+    .prices .discount { font-size:12px; }
+    .btn-buy { padding:8px; font-size:14px; }
+  }
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <h1>BeautyBucket</h1>
+  <div class="sub">Quality Cosmetics. Quick Delivery.</div>
+</header>
+
+<div class="top-bar">
+  <div class="filter-toggle">&#9776; Filters</div>
+  <input id="searchInput" placeholder="Search products...">
+  <input id="pincodeInput" placeholder="Pincode">
+  <div id="pincodeMessage"></div>
+</div>
+
+<div class="filter-panel" id="filterPanel">
+  <!-- filter UI as before -->
+  <div class="section">
+    <h4>Category</h4>
+    <div id="categoryFilters"></div>
+  </div>
+  <div class="section">
+    <h4>Sort By</h4>
+    <label><input type="radio" name="sort" value="none" checked> Default</label><br>
+    <label><input type="radio" name="sort" value="price-asc"> Price: Low → High</label><br>
+    <label><input type="radio" name="sort" value="price-desc"> Price: High → Low</label><br>
+    <label><input type="radio" name="sort" value="discount-desc"> Discount: High → Low</label>
+  </div>
+  <div class="section">
+    <button id="clearFilters">Clear Filters</button>
+  </div>
+</div>
+<div class="overlay" id="overlay"></div>
+
+<main class="container">
+  <div id="productList" class="products"></div>
+</main>
+
+<footer style="text-align:center; padding:16px; color:#777;">
+  &copy; BeautyBucket
+</footer>
+
+<script>
+  const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQA2pIOTPv2AVnMSWtlKLJeSXQXxTllgHn2gGYcdd_ZbHARLmclz_OXy009Aw9hJqgpc-RXIk_HXkK4/pub?gid=125100016&single=true&output=csv";
+  const LOCAL_PINCODES = ["411001","411002","411003","411028","411060","412308","412307","411036","411013"];
+
+  let allProducts = [];
+  let filters = { categories: new Set(), sort: 'none', search:'', inStockOnly: false };
+
+  function parseCSV(text) {
+    text = text.replace(/^\uFEFF/, '').trim();
+    const rows = []; let cur=['']; let col=0; let inQuotes=false;
+    for (let i = 0; i < text.length; i++) {
+      const ch = text[i], nxt = text[i+1];
+      if (ch === '"') {
+        if (inQuotes && nxt === '"') { cur[col] += '"'; i++; continue; }
+        inQuotes = !inQuotes; continue;
+      }
+      if (!inQuotes && ch === ',') { col++; cur[col] = ''; continue; }
+      if (!inQuotes && (ch === '\n' || ch === '\r')) {
+        rows.push(cur); cur=['']; col=0;
+        if (ch==='\\r' && nxt==='\\n') i++;
+        continue;
+      }
+      cur[col] += ch;
+    }
+    if (cur.length > 1 || cur[0].trim()!=='') rows.push(cur);
+    const headers = rows.shift().map(h => h.trim());
+    return rows.map(r => {
+      const o = {};
+      for (let i=0; i<headers.length; i++) o[headers[i]] = (r[i]||'').trim();
+      return o;
+    });
+  }
+
+  async function loadProducts() {
+    try {
+      const res = await fetch(CSV_URL);
+      const txt = await res.text();
+      allProducts = parseCSV(txt);
+      initFilters();
+      renderProducts();
+    } catch (err) {
+      console.error('CSV load error', err);
+      document.getElementById('productList').innerHTML = '<div style="padding:20px; color:#c00;">Failed to load products.</div>';
+    }
+  }
+
+  function initFilters(){
+    const cats = Array.from(new Set(allProducts.map(p => (p.Category||'').trim()).filter(Boolean)));
+    const container = document.getElementById('categoryFilters');
+    cats.forEach(c => {
+      const id = 'cat_' + c.replace(/\s+/g,'_');
+      const lbl = document.createElement('label');
+      lbl.innerHTML = `<input type="checkbox" id="${id}" value="${c}"> ${c}`;
+      container.append(lbl);
+      lbl.querySelector('input').addEventListener('change', e => {
+        if (e.target.checked) filters.categories.add(e.target.value);
+        else filters.categories.delete(e.target.value);
+        renderProducts();
+      });
+    });
+
+    document.querySelectorAll('input[name="sort"]').forEach(r => {
+      r.addEventListener('change', e => {
+        filters.sort = e.target.value; renderProducts();
+      });
+    });
+
+    document.getElementById('searchInput').addEventListener('input', e => {
+      filters.search = e.target.value.trim().toLowerCase(); renderProducts();
+    });
+
+    document.getElementById('clearFilters').addEventListener('click', () => {
+      filters = { categories: new Set(), sort: 'none', search:'', inStockOnly: false };
+      document.getElementById('searchInput').value = '';
+      document.querySelectorAll('#categoryFilters input[type=checkbox]').forEach(cb => cb.checked = false);
+      document.querySelector('input[name="sort"][value="none"]').checked = true;
+      renderProducts();
+    });
+  }
+
+  function renderProducts(){
+    const listEl = document.getElementById('productList');
+    listEl.innerHTML = '';
+
+    let items = allProducts.filter(p => {
+      if (filters.categories.size > 0 && !filters.categories.has((p.Category||'').trim())) return false;
+      if (filters.search) {
+        const hay = (p.ProductName + ' ' + [p.Detail1,p.Detail2,p.Detail3,p.Detail4,p.Detail5].join(' ')).toLowerCase();
+        if (!hay.includes(filters.search)) return false;
+      }
+      return true;
+    });
+
+    if (filters.sort === 'price-asc' || filters.sort === 'price-desc') {
+      items.sort((a,b) => {
+        const pa = parseFloat(a.SellingPrice1pc) || 0;
+        const pb = parseFloat(b.SellingPrice1pc) || 0;
+        return filters.sort === 'price-asc' ? pa - pb : pb - pa;
+      });
+    } else if (filters.sort === 'discount-desc') {
+      items.sort((a,b) => {
+        const da = parseFloat(a.Discount1pcPercent) || 0;
+        const db = parseFloat(b.Discount1pcPercent) || 0;
+        return db - da;
+      });
+    }
+
+    if (items.length === 0) {
+      listEl.innerHTML = '<div style="padding:20px; color:#666;">No products found</div>';
+      return;
+    }
+
+    items.forEach(p => {
+      const mrp = p.MRP ? '₹'+parseFloat(p.MRP).toFixed(2) : '';
+      const sp1 = p.SellingPrice1pc ? '₹'+parseFloat(p.SellingPrice1pc).toFixed(2) : '';
+      const sp5 = p.SellingPrice5pc ? '₹'+parseFloat(p.SellingPrice5pc).toFixed(2) : '';
+      const d1 = p.Discount1pcPercent ? p.Discount1pcPercent + '% off' : '';
+      const d5 = p.Discount5pcPercent ? p.Discount5pcPercent + '% off' : '';
+      const inStock = p.Stock && parseInt(p.Stock) > 0;
+
+      const card = document.createElement('div');
+      card.className = 'product-card';
+      let overlayBadge = '';
+      if (!inStock) {
+        overlayBadge = `<div class="out-of-stock-overlay">Out of Stock</div>`;
+      }
+      card.innerHTML = `
+        <div class="card-main">
+          <div style="position: relative; flex-shrink:0;">
+            <img src="${p.ImageURL || 'images/placeholder.png'}" alt="${p.ProductName}" onerror="this.src='images/placeholder.png'">
+            ${overlayBadge}
+          </div>
+          <div class="p-body">
+            <h4 class="p-title">${p.ProductName || ''}</h4>
+            <div class="p-cat">${p.Category || ''}</div>
+            <div class="p-details">${[p.Detail1,p.Detail2,p.Detail3,p.Detail4,p.Detail5].filter(Boolean).join(', ')}</div>
+            <div class="prices">
+              ${ mrp ? `<div class="mrp">${mrp}</div>` : '' }
+              ${ sp1 ? `<div class="sp">1 pc: ${sp1}</div>` : '' }
+              ${ d1 ? `<div class="discount">${d1}</div>` : '' }
+              ${ sp5 ? `<div class="sp">5 pc: ${sp5}</div>` : '' }
+              ${ d5 ? `<div class="discount">${d5}</div>` : '' }
+            </div>
+            <button class="btn-buy" onclick="buyWhatsApp('${encodeURIComponent(p.ProductName)}')">Buy via WhatsApp</button>
+          </div>
+        </div>
+      `;
+      listEl.appendChild(card);
+    });
+  }
+
+  function buyWhatsApp(prod) {
+    const product = decodeURIComponent(prod);
+    const pincode = (document.getElementById('pincodeInput')||{value:''}).value.trim();
+    const msg = `Hi, I want to buy *${product}*.\nPincode: ${pincode || '-'}\nName:\nAddress:`;
+    window.open(`https://wa.me/918149520594?text=${encodeURIComponent(msg)}`, '_blank');
+  }
+
+  const fp = document.getElementById('filterPanel');
+  const overlay = document.getElementById('overlay');
+  document.querySelector('.filter-toggle').addEventListener('click', () => {
+    fp.classList.toggle('open');
+    overlay.classList.toggle('show');
+  });
+  overlay.addEventListener('click', () => {
+    fp.classList.remove('open');
+    overlay.classList.remove('show');
+  });
+
+  document.getElementById('pincodeInput').addEventListener('input', e => {
+    const pin = e.target.value.trim();
+    const msgEl = document.getElementById('pincodeMessage');
+    if (!pin) { msgEl.textContent = ''; return; }
+    if (LOCAL_PINCODES.includes(pin)) msgEl.textContent = 'Free delivery for this pincode.';
+    else msgEl.textContent = 'Delivery charges applicable.';
+  });
+
+  loadProducts();
+</script>
+
+</body>
+</html>

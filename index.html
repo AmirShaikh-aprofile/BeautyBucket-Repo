@@ -23,14 +23,6 @@ a,button{font-family:inherit;cursor:pointer}
 .sub{font-size:13px;opacity:0.95;margin-top:4px}
 .controls{display:flex;gap:8px;align-items:center}
 .dark-toggle{padding:8px;border-radius:10px;background:transparent;color:#fff;border:1px solid rgba(255,255,255,0.12)}
-.hero{margin:16px 0 8px;position:relative;border-radius:12px;overflow:hidden;height:220px;box-shadow:0 12px 40px rgba(16,24,40,0.06)}
-.slide{position:absolute;inset:0;display:flex;align-items:center;padding:28px;transition:opacity .6s ease,transform .45s ease;opacity:0;transform:translateY(6px);background-size:cover;background-position:center}
-.slide.show{opacity:1;transform:none}
-.slide .txt h2{font-size:26px;margin-bottom:6px;position:relative}
-.slide .txt h2::before{content:"";position:absolute;inset:0;background-image:url('https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?w=900&q=80&auto=format&fit=crop');opacity:0.4;border-radius:10px;z-index:-1}
-.slide .txt p{color:var(--muted)}
-.hero .nav{position:absolute;top:50%;left:12px;right:12px;display:flex;justify-content:space-between;transform:translateY(-50%);pointer-events:none}
-.hero .arrow{pointer-events:auto;background:#fff;border-radius:999px;padding:8px 10px;box-shadow:0 8px 22px rgba(16,24,40,0.08)}
 .top-bar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:8px 0 12px}
 #searchInput{flex:1 1 220px;padding:10px;border-radius:10px;border:1px solid rgba(0,0,0,0.06);background:#fff}
 #pincodeInput{width:130px;padding:8px;border-radius:10px;border:1px solid rgba(0,0,0,0.06);background:#fff}
@@ -42,34 +34,25 @@ a,button{font-family:inherit;cursor:pointer}
 .products{display:grid;grid-template-columns:1fr;gap:18px;margin-bottom:40px}
 @media(min-width:800px){.products{grid-template-columns:repeat(2,1fr)}}
 @media(min-width:1200px){.products{grid-template-columns:repeat(3,1fr)}}
-.product-card{background:var(--card);border-radius:14px;padding:12px;border:1px solid rgba(16,24,40,0.04);display:flex;flex-direction:column;min-height:260px;box-shadow:0 8px 28px rgba(16,24,40,0.04);transition:transform .18s,box-shadow .18s;position:relative}
+.product-card{background:var(--card);border-radius:14px;padding:12px;border:1px solid rgba(16,24,40,0.04);display:flex;flex-direction:column;min-height:300px;box-shadow:0 8px 28px rgba(16,24,40,0.04);transition:transform .18s,box-shadow .18s;position:relative}
 .imgwrap{height:160px;border-radius:10px;background:linear-gradient(180deg,#fff,#fcfcfd);display:flex;align-items:center;justify-content:center;overflow:hidden}
 .imgwrap img{max-width:100%;max-height:100%;object-fit:contain;display:block}
-.p-body{padding:12px 6px 6px;display:flex;flex-direction:column;gap:8px;flex:1}
+.p-body{padding:12px 6px 6px;display:flex;flex-direction:column;gap:6px;flex:1}
 .p-title{font-weight:600;font-size:16px;display:flex;align-items:center;gap:8px}
 .p-cat{color:var(--muted);font-size:13px}
 .p-details{color:var(--muted);font-size:13px;min-height:36px}
-.prices{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:auto}
-.mrp{color:#9aa0a6;text-decoration:line-through;font-size:13px}
-.sp{font-weight:700;font-size:16px}
+.prices{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:auto;font-size:14px}
+.mrp{color:#9aa0a6;text-decoration:line-through}
+.sp{font-weight:700;font-size:15px}
 .discount{color:#d10000;font-size:13px}
+.stock-info{font-size:13px;color:#888}
 .card-actions{display:flex;gap:8px;align-items:center;margin-top:10px}
-.btn-buy{background:var(--success);color:#fff;padding:8px 12px;border-radius:10px;border:0;font-weight:700}
-.btn-details{padding:8px 12px;border-radius:10px;border:1px solid rgba(0,0,0,0.06);background:transparent}
+.btn-buy{background:var(--success);color:#fff;padding:6px 12px;border-radius:10px;border:0;font-weight:700;cursor:pointer}
 .out-of-stock-overlay{position:absolute;left:12px;top:12px;background:rgba(255,0,0,0.9);color:#fff;padding:6px 8px;border-radius:8px;font-weight:700;z-index:10}
-.heart{margin-left:auto;font-size:18px;color:#bbb;cursor:pointer}
-.heart.faved{color:#e91e63;transform:scale(1.02)}
 .spinner-wrap{display:flex;align-items:center;justify-content:center;padding:30px}
 .spinner{width:44px;height:44px;border-radius:50%;border:5px solid rgba(0,0,0,0.07);border-top-color:var(--accent1);animation:spin 1s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
 #errorMsg{color:#c00;padding:20px}
-.modal{position:fixed;inset:0;display:none;align-items:center;justify-content:center;z-index:1200}
-.modal.show{display:flex}
-.modal-backdrop{position:absolute;inset:0;background:rgba(0,0,0,0.6)}
-.modal-card{position:relative;background:var(--card);width:92%;max-width:920px;border-radius:12px;padding:18px;z-index:1201;max-height:90vh;overflow:auto}
-.modal-gallery{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
-.modal-gallery img{width:180px;height:180px;object-fit:contain;border-radius:8px}
-.sentinel{height:1px}
 .muted{color:var(--muted);font-size:13px}
 </style>
 </head>
@@ -89,31 +72,6 @@ a,button{font-family:inherit;cursor:pointer}
 </header>
 
 <div class="container">
-  <div class="hero" id="hero">
-    <div class="slide show" data-index="0">
-      <div class="txt">
-        <h2>Fresh arrivals — curated just for you</h2>
-        <p>Discover the latest cosmetics handpicked for quality, performance and style. Free delivery on select pincodes.</p>
-      </div>
-    </div>
-    <div class="slide" data-index="1">
-      <div class="txt">
-        <h2>Limited time offer: Up to 40% off</h2>
-        <p>Special bundle deals on our best sellers. Tap a product and buy directly via WhatsApp.</p>
-      </div>
-    </div>
-    <div class="slide" data-index="2">
-      <div class="txt">
-        <h2>Clean, cruelty-free formulas</h2>
-        <p>We only list responsibly made products — quality and safety first.</p>
-      </div>
-    </div>
-    <div class="nav">
-      <button id="prevSlide" class="arrow">‹</button>
-      <button id="nextSlide" class="arrow">›</button>
-    </div>
-  </div>
-
   <div class="top-bar">
     <div style="flex:1;display:flex;gap:8px;align-items:center">
       <input id="searchInput" placeholder="Search products..." aria-label="Search products">
@@ -130,26 +88,15 @@ a,button{font-family:inherit;cursor:pointer}
   <div id="productList" class="products" aria-live="polite"></div>
   <div id="spinner" class="spinner-wrap" style="display:none"><div class="spinner"></div></div>
   <div id="errorMsg" style="display:none"></div>
-  <div class="sentinel" id="sentinel"></div>
-</div>
-
-<div id="modal" class="modal" aria-hidden="true">
-  <div class="modal-backdrop" onclick="closeModal()"></div>
-  <div class="modal-card" role="dialog" aria-modal="true">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
-      <h3 id="modalTitle" style="margin:0"></h3>
-      <button onclick="closeModal()" style="background:transparent;border:0;font-size:20px;cursor:pointer">✕</button>
-    </div>
-    <div id="modalContent"></div>
-  </div>
 </div>
 
 <script>
 const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQA2pIOTPv2AVnMSWtlKLJeSXQXxTllgHn2gGYcdd_ZbHARLmclz_OXy009Aw9hJqgpc-RXIk_HXkK4/pub?gid=1550466309&single=true&output=csv";
 const PLACEHOLDER = "https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?w=900&q=80&auto=format&fit=crop";
-let allProducts = [], visible = [], filters = { categories: new Set(), search: '' };
+let allProducts = [];
+const filters = { categories: new Set(), search: '' };
 const FREE_PINCODES = ['411028','411060','412308','412307','411036','411013'];
-const PORTAR_PINCODES = [/* all other Pune pincodes */]; // truncated
+const PORTAR_PINCODES = []; // add other Pune pincodes if needed
 
 function updatePincodeMessage(){
   const val = document.getElementById('pincodeInput').value.trim();
@@ -160,50 +107,55 @@ function updatePincodeMessage(){
 }
 document.getElementById('pincodeInput').addEventListener('input', updatePincodeMessage);
 
-function parseCSV(str){
-  const lines = str.trim().split('\n');
-  const headers = lines.shift().split('\t');
-  return lines.map(l=>{
+function parseCSV(csv){
+  const lines = csv.trim().split(/\r?\n/);
+  const headers = lines.shift().split(',').map(h=>h.trim());
+  return lines.map(line=>{
+    const values = line.split(',').map(v=>v.trim());
     const obj = {};
-    const values = l.split('\t');
-    headers.forEach((h,i)=>obj[h]=values[i] || '');
+    headers.forEach((h,i)=>obj[h]=values[i]||'');
     return obj;
   });
 }
 
 function fetchProducts(){
   document.getElementById('spinner').style.display='flex';
-  fetch(CSV_URL).then(r=>r.text()).then(text=>{
-    allProducts = parseCSV(text);
-    allProducts.forEach(p=>{
-      p.Name = p.ProductName || '';
-      p.Description = p.Details || '';
-      p.category = p.Category || 'Uncategorized';
-      p.stock = parseInt(p.Stock || 0);
-      p.price = parseFloat(p.SellingPrice1pc || 0);
-      p.mrp = parseFloat(p.MRP || p.price);
-      p.discount = Math.round(((p.mrp - p.price)/p.mrp)*100);
-      p.images = p.ImageURL ? p.ImageURL.split('|') : [PLACEHOLDER];
+  fetch(CSV_URL)
+    .then(r=>r.text())
+    .then(text=>{
+      allProducts = parseCSV(text);
+      allProducts.forEach(p=>{
+        p.Name = p.ProductName || '';
+        p.Description = p.Details || '';
+        p.category = p.Category || 'Uncategorized';
+        p.stock = parseInt(p.Stock||0);
+        p.price1pc = parseFloat(p.SellingPrice1pc||0);
+        p.price5pc = parseFloat(p.SellingPrice5pc||0);
+        p.mrp = parseFloat(p.MRP||p.price1pc);
+        p.discount1pc = Math.round(((p.mrp-p.price1pc)/p.mrp)*100);
+        p.discount5pc = Math.round(((p.mrp-p.price5pc)/p.mrp)*100);
+        p.images = p.ImageURL ? p.ImageURL.split('|') : [PLACEHOLDER];
+      });
+      renderCategoryFilters();
+      renderProducts();
+    }).catch(e=>{
+      document.getElementById('spinner').style.display='none';
+      const msg = document.getElementById('errorMsg');
+      msg.style.display='block';
+      msg.textContent = 'Error loading products.';
+      console.error(e);
     });
-    renderCategoryFilters();
-    renderProducts();
-  }).catch(e=>{
-    document.getElementById('spinner').style.display='none';
-    const msg = document.getElementById('errorMsg');
-    msg.style.display='block';
-    msg.textContent = 'Error loading products.';
-  });
 }
 
 function renderCategoryFilters(){
   const container = document.getElementById('categoryFilters');
-  container.innerHTML = '';
+  container.innerHTML='';
   const categories = Array.from(new Set(allProducts.map(p=>p.category)));
   categories.forEach(cat=>{
     const btn = document.createElement('button');
     btn.className='cat-btn';
     btn.textContent=cat;
-    btn.onclick = ()=>{
+    btn.onclick=()=>{
       if(filters.categories.has(cat)) filters.categories.delete(cat);
       else filters.categories.add(cat);
       updateFilterUI();
@@ -217,7 +169,7 @@ function updateFilterUI(){
   document.querySelectorAll('.cat-btn').forEach(btn=>{
     btn.classList.toggle('active', filters.categories.has(btn.textContent));
   });
-  document.getElementById('clearFilters').style.display = filters.categories.size>0 ? 'inline-block' : 'none';
+  document.getElementById('clearFilters').style.display = filters.categories.size>0 ? 'inline-block':'none';
 }
 
 document.getElementById('clearFilters').onclick=()=>{
@@ -228,7 +180,7 @@ document.getElementById('clearFilters').onclick=()=>{
 
 function renderProducts(){
   const container = document.getElementById('productList');
-  container.innerHTML = '';
+  container.innerHTML='';
   let filtered = allProducts.filter(p=>{
     return (filters.categories.size===0 || filters.categories.has(p.category)) &&
            (p.Name.toLowerCase().includes(filters.search.toLowerCase()));
@@ -237,16 +189,16 @@ function renderProducts(){
     const card = document.createElement('div');
     card.className='product-card';
     card.innerHTML = `
-      <div class="imgwrap"><img src="${p.images[0] || PLACEHOLDER}" alt="${p.Name}"></div>
+      <div class="imgwrap"><img src="${p.images[0]}" alt="${p.Name}"></div>
       <div class="p-body">
         <div class="p-title">${p.Name}</div>
         <div class="p-cat">${p.category}</div>
         <div class="p-details">${p.Description}</div>
         <div class="prices">
-          <div class="sp">₹${p.price}</div>
-          <div class="mrp">₹${p.mrp}</div>
-          ${p.discount>0?`<div class="discount">${p.discount}% off</div>`:''}
+          <div>1 pc: <span class="sp">₹${p.price1pc}</span> ${p.discount1pc>0?`<span class="discount">${p.discount1pc}% off</span>`:''}</div>
+          <div>5 pc: <span class="sp">₹${p.price5pc}</span> ${p.discount5pc>0?`<span class="discount">${p.discount5pc}% off</span>`:''}</div>
         </div>
+        <div class="stock-info">Stock: ${p.stock}</div>
       </div>
       ${p.stock<=0?'<div class="out-of-stock-overlay">Out of stock</div>':''}
       <div class="card-actions"><button class="btn-buy">Buy</button></div>

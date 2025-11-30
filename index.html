@@ -418,4 +418,34 @@
     }
 
     function buyWhatsApp(product) {
-      const pname = (p
+      const pname = (product||'').trim();
+      const pincode = (document.getElementById('pincodeInput')||{value:''}).value.trim();
+      const msg = `Hi, I want to buy *${pname}*.\nPincode: ${pincode || '-'}\nName:\nAddress:`;
+      window.open(`https://wa.me/918149520594?text=${encodeURIComponent(msg)}`, '_blank');
+    }
+
+    // small escape helpers to avoid XSS on rendered HTML
+    function escapeHtml(s) {
+      if (!s) return '';
+      return s.replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;');
+    }
+    function escapeAttr(s) {
+      if (!s) return '';
+      return s.replaceAll('"','%22').replaceAll("'", '%27');
+    }
+
+    // load on start
+    document.querySelector('.filter-toggle').addEventListener('click', ()=> {
+      document.getElementById('filterPanel').classList.toggle('open');
+      document.getElementById('overlay').classList.toggle('show');
+    });
+    document.getElementById('overlay').addEventListener('click', ()=> {
+      document.getElementById('filterPanel').classList.remove('open');
+      document.getElementById('overlay').classList.remove('show');
+    });
+
+    // initialize
+    loadProducts();
+  </script>
+</body>
+</html>

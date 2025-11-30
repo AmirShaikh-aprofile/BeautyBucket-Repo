@@ -35,8 +35,9 @@ a,button{font-family:inherit;cursor:pointer}
 @media(min-width:800px){.products{grid-template-columns:repeat(2,1fr)}}
 @media(min-width:1200px){.products{grid-template-columns:repeat(3,1fr)}}
 .product-card{background:var(--card);border-radius:14px;padding:12px;border:1px solid rgba(16,24,40,0.04);display:flex;flex-direction:column;min-height:300px;box-shadow:0 8px 28px rgba(16,24,40,0.04);transition:transform .18s,box-shadow .18s;position:relative}
-.imgwrap{height:160px;border-radius:10px;background:linear-gradient(180deg,#fff,#fcfcfd);display:flex;align-items:center;justify-content:center;overflow:hidden}
-.imgwrap img{max-width:100%;max-height:100%;object-fit:contain;display:block}
+.imgwrap{height:160px;border-radius:10px;background:linear-gradient(180deg,#fff,#fcfcfd);display:flex;align-items:center;justify-content:center;overflow:hidden;position:relative}
+.imgwrap img{max-width:100%;max-height:100%;object-fit:contain;display:block;opacity:0.9}
+.watermark{position:absolute;bottom:8px;left:8px;background:rgba(255,255,255,0.6);padding:4px 8px;border-radius:6px;font-size:12px;font-weight:600;color:#111}
 .p-body{padding:12px 6px 6px;display:flex;flex-direction:column;gap:6px;flex:1}
 .p-title{font-weight:600;font-size:16px;display:flex;align-items:center;gap:8px}
 .p-cat{color:var(--muted);font-size:13px}
@@ -54,6 +55,7 @@ a,button{font-family:inherit;cursor:pointer}
 @keyframes spin{to{transform:rotate(360deg)}}
 #errorMsg{color:#c00;padding:20px}
 .muted{color:var(--muted);font-size:13px}
+.slider{position:relative;overflow:hidden;border-radius:10px;margin-bottom:16px;background:linear-gradient(90deg,var(--accent1),var(--accent2));color:#fff;padding:16px;font-weight:600;font-size:14px;text-align:center}
 </style>
 </head>
 <body>
@@ -72,6 +74,8 @@ a,button{font-family:inherit;cursor:pointer}
 </header>
 
 <div class="container">
+  <div class="slider" id="sliderMessage">Limited time offer: Up to 20% off</div>
+  
   <div class="top-bar">
     <div style="flex:1;display:flex;gap:8px;align-items:center">
       <input id="searchInput" placeholder="Search products..." aria-label="Search products">
@@ -95,8 +99,10 @@ const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQA2pIOTPv2AVnM
 const PLACEHOLDER = "https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?w=900&q=80&auto=format&fit=crop";
 let allProducts = [];
 const filters = { categories: new Set(), search: '' };
+
+// Pincode lists
 const FREE_PINCODES = ['411028','411060','412308','412307','411036','411013'];
-const PORTAR_PINCODES = []; // add other Pune pincodes if needed
+const PORTAR_PINCODES = ['411004','411040','410506','410509','413132','411032','411035','412411','412205','412201','412105','412211','412206','410507','411042','410401','411046','410501','410505','412218','411003','412408','411051','412410','410502','413114','412212','411021','412401','412207','412404','411007','411027','412406','412402','412405','412204','411002','411045','413102','413133','413103','413801','412108','413104','412303','412203','412209','413130','413105','412301','411026','411039','412106','411038','410513','411037','413106','412202','412208','411001','411031','410503','412114','412409','411019','412101','411005','412213','411012','412305','412311','412109','412214','413110','410508','412403','411043','411015','411041','411014','412216','410516','413120','411016','412210','412102','412104','411028','411013','410504','412306','411025','411057','410402','412215','412107','410403','411017','410405','412412','412219','412220','411052','411034','411011','411024','413116','410301','411048','412103','411023','410511','413802','410512','411047','411030','410510','410515','413115','412307','411018','412304','411036','411008','411044','411009','410406','412308','410302','411020','411022','412110','412312','411058','411006','411060'];
 
 function updatePincodeMessage(){
   const val = document.getElementById('pincodeInput').value.trim();
@@ -188,8 +194,12 @@ function renderProducts(){
   filtered.forEach(p=>{
     const card = document.createElement('div');
     card.className='product-card';
+    const watermarkText = "Clean, cruelty-free formulas"; // Watermark message
     card.innerHTML = `
-      <div class="imgwrap"><img src="${p.images[0]}" alt="${p.Name}"></div>
+      <div class="imgwrap">
+        <img src="${p.images[0]}" alt="${p.Name}">
+        <div class="watermark">${watermarkText}</div>
+      </div>
       <div class="p-body">
         <div class="p-title">${p.Name}</div>
         <div class="p-cat">${p.category}</div>
@@ -212,6 +222,14 @@ document.getElementById('searchInput').addEventListener('input',(e)=>{
   filters.search = e.target.value;
   renderProducts();
 });
+
+// Slider rotation
+const sliderMessages = ["Limited time offer: Up to 20% off", "Clean, cruelty-free formulas"];
+let currentSlide = 0;
+setInterval(()=>{
+  currentSlide = (currentSlide+1)%sliderMessages.length;
+  document.getElementById('sliderMessage').textContent = sliderMessages[currentSlide];
+},4000);
 
 fetchProducts();
 </script>

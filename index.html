@@ -32,17 +32,11 @@
     .dark-toggle{padding:8px;border-radius:10px;background:transparent;color:#fff;border:1px solid rgba(255,255,255,0.12)}
 
     /* ---------- Hero ---------- */
-    .hero{margin:16px 0 8px;position:relative;border-radius:12px;overflow:hidden;height:220px;box-shadow:0 12px 40px rgba(16,24,40,0.06)}
+    .hero{margin:16px 0 8px;position:relative;border-radius:12px;overflow:hidden;height:220px;box-shadow:0 12px 40px rgba(16,24,40,0.06);background: url('https://images.unsplash.com/photo-1582363425002-5e9238c726ef?w=900&q=80&auto=format&fit=crop') center/cover;}
     .slide{position:absolute;inset:0;display:flex;align-items:center;padding:28px;transition:opacity .6s ease,transform .45s ease;opacity:0;transform:translateY(6px)}
     .slide.show{opacity:1;transform:none}
-    .slide .txt h2{
-      font-size:26px;
-      margin-bottom:6px;
-      background-image: url('https://example.com/cosmetic-watermark.png'); /* Your watermark image */
-      background-size: cover;
-      color: white;
-      padding: 20px;
-    }
+    .slide .txt h2{font-size:26px;margin-bottom:6px;color:rgba(255,255,255,0.85)}
+    .slide .txt p{color:var(--muted);font-size:16px;color:rgba(255,255,255,0.7)}
     .hero .nav{position:absolute;top:50%;left:12px;right:12px;display:flex;justify-content:space-between;transform:translateY(-50%);pointer-events:none}
     .hero .arrow{pointer-events:auto;background:#fff;border-radius:999px;padding:8px 10px;box-shadow:0 8px 22px rgba(16,24,40,0.08)}
 
@@ -52,21 +46,13 @@
     #pincodeInput{width:130px;padding:8px;border-radius:10px;border:1px solid rgba(0,0,0,0.06);background:#fff}
     #pincodeMessage{width:100%;font-size:13px;color:var(--muted);margin-top:6px}
 
-    /* ---------- Categories buttons ---------- */
+    /* ---------- Filters row ---------- */
     .filters-row{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}
     .cat-btn{padding:8px 12px;border-radius:999px;border:1px solid rgba(0,0,0,0.06);background:transparent;color:var(--text);cursor:pointer;box-shadow:0 6px 20px rgba(16,24,40,0.03)}
     .cat-btn.active{background:linear-gradient(90deg,var(--accent1),var(--accent2));color:#fff;transform:translateY(-3px);box-shadow:0 18px 40px rgba(255,90,168,0.12)}
+    .clear-filter-btn{background-color: #333; color: white; padding: 8px 12px; border-radius: 999px; cursor: pointer; display: none;}
 
-    .clear-filters-btn {
-      padding: 8px 12px;
-      background-color: #333;
-      color: white;
-      border-radius: 10px;
-      cursor: pointer;
-      border: none;
-    }
-
-    /* ---------- Products grid ---------- */
+    /* ---------- Product grid and cards ---------- */
     .products{display:grid;grid-template-columns:1fr;gap:18px;margin-bottom:40px}
     @media(min-width:800px){.products{grid-template-columns:repeat(2,1fr)}}
     @media(min-width:1200px){.products{grid-template-columns:repeat(3,1fr)}}
@@ -84,18 +70,6 @@
     .mrp{color:#9aa0a6;text-decoration:line-through;font-size:13px}
     .sp{font-weight:700;font-size:16px}
     .discount{color:#d10000;font-size:13px}
-
-    .card-actions{display:flex;gap:8px;align-items:center;margin-top:10px}
-    .btn-buy{background:var(--success);color:#fff;padding:8px 12px;border-radius:10px;border:0;font-weight:700}
-    .btn-details{padding:8px 12px;border-radius:10px;border:1px solid rgba(0,0,0,0.06);background:transparent}
-
-    .out-of-stock-overlay{position:absolute;left:12px;top:12px;background:rgba(255,0,0,0.9);color:#fff;padding:6px 8px;border-radius:8px;font-weight:700}
-
-    /* spinner + error */
-    .spinner-wrap{display:flex;align-items:center;justify-content:center;padding:30px}
-    .spinner{width:44px;height:44px;border-radius:50%;border:5px solid rgba(0,0,0,0.07);border-top-color:var(--accent1);animation:spin 1s linear infinite}
-    @keyframes spin{to{transform:rotate(360deg)}}
-    #errorMsg{color:#c00;padding:10px 12px;font-size:14px}
   </style>
 </head>
 <body>
@@ -103,81 +77,32 @@
   <header class="site-header">
     <div class="container">
       <div class="row">
-        <div class="brand">
-          <img src="https://example.com/logo.png" alt="BeautyBucket" />
-          BeautyBucket Quality Cosmetics. Quick Delivery.
+        <div>
+          <div class="brand">BeautyBucket</div>
+          <div class="sub">Quality Cosmetics. Quick Delivery.</div>
+        </div>
+        <div class="controls">
+          <button id="themeToggle" class="dark-toggle" title="Toggle dark mode">🌓</button>
         </div>
       </div>
     </div>
   </header>
 
-  <section class="container">
-    <!-- Top bar search -->
-    <div class="top-bar">
-      <input type="text" id="searchInput" placeholder="Search products...">
-      <input type="text" id="pincodeInput" placeholder="Enter Pincode" oninput="checkPincode()">
-      <div id="pincodeMessage"></div>
-    </div>
-
-    <!-- Filters and Clear Filters -->
-    <div class="filters-row">
-      <button class="cat-btn" onclick="toggleCategory(this)">Makeup</button>
-      <button class="cat-btn" onclick="toggleCategory(this)">Skincare</button>
-      <button class="cat-btn" onclick="toggleCategory(this)">Haircare</button>
-      <button class="clear-filters-btn" onclick="clearFilters()">Clear Filters</button>
-    </div>
-
-    <!-- Products Grid -->
-    <div class="products">
-      <div class="product-card">
-        <div class="out-of-stock-overlay">Out of Stock</div>
-        <div class="imgwrap"><img src="https://example.com/product1.jpg" alt="Product 1"></div>
-        <div class="p-body">
-          <div class="p-title">Product Name</div>
-          <div class="p-cat">Category</div>
-          <div class="p-details">Details</div>
-          <div class="prices">
-            <span class="mrp">$50</span>
-            <span class="sp">$40</span>
-            <span class="discount">-20%</span>
-          </div>
-          <div class="card-actions">
-            <button class="btn-buy">Buy Now</button>
-            <button class="btn-details">View Details</button>
-          </div>
+  <div class="container">
+    <!-- HERO -->
+    <div class="hero" id="hero">
+      <div class="slide show" data-index="0">
+        <div class="txt">
+          <h2>Fresh arrivals — curated just for you</h2>
+          <p>Discover the latest cosmetics handpicked for quality, performance and style. Free delivery on select pincodes.</p>
         </div>
       </div>
-    </div>
-  </section>
-
-  <script>
-    let freeDeliveryPinCodes = ['411028', '411060', '412308', '412307', '411036', '411013'];
-    let portDeliveryPinCodes = ['411004', '411040', '410506', '410509', '413132', '411032', '411035', '412411', '412205', '412201', '412105', '412211', '412206', '410507', '411042', '410401', '411046', '410501', '410505', '412218', '411003', '412408', '411051', '412410', '410502', '413114', '412212', '411021', '412401', '412207', '412404', '411007', '411027', '412406', '412402', '412405', '412204', '411002', '411045', '413102', '413133', '413103', '413801', '412108', '413104', '412303', '412203', '412209', '413130', '413105', '412301', '411026', '411039', '412106', '411038', '410513', '411037', '413106', '412202', '412208', '411001', '411031', '410503', '412114', '412409', '411019', '412101', '411005', '412213', '411012', '412305', '412311', '412109', '412214', '413110', '410508', '412403', '411043', '411015', '411041', '411014', '412216', '410516', '413120', '411016', '412210', '412102', '412104', '411028', '411013', '410504', '412306', '411025', '411057', '410402', '412215', '412107', '410403', '411017', '410405', '412412', '412219', '412220', '411052', '411034', '411011', '411024', '413116', '410301', '411048', '412103', '411023', '410511', '413802', '410512', '411047', '411030', '410510', '410515', '413115', '412307', '411018', '412304', '411036', '411008', '411044', '411009', '410406', '412308', '410302', '411020', '411022', '412110', '412312', '411058', '411006', '411060'];
-
-    function checkPincode() {
-      const pincode = document.getElementById("pincodeInput").value;
-      const pincodeMessage = document.getElementById("pincodeMessage");
-
-      if (freeDeliveryPinCodes.includes(pincode)) {
-        pincodeMessage.innerHTML = "<strong>Free Instance Delivery For You</strong>";
-      } else if (portDeliveryPinCodes.includes(pincode)) {
-        pincodeMessage.innerHTML = "Instance Delivery with Portar";
-      } else {
-        pincodeMessage.innerHTML = "Delivery charges is Applicable";
-      }
-    }
-
-    // Category button toggle
-    function toggleCategory(button) {
-      button.classList.toggle("active");
-    }
-
-    // Clear all active filters
-    function clearFilters() {
-      const activeButtons = document.querySelectorAll(".cat-btn.active");
-      activeButtons.forEach(button => button.classList.remove("active"));
-    }
-  </script>
-
-</body>
-</html>
+      <div class="slide" data-index="1">
+        <div class="txt">
+          <h2>Limited time offer: Up to 40% off</h2>
+          <p>Special bundle deals on our best sellers. Tap a product and buy directly via WhatsApp.</p>
+        </div>
+      </div>
+      <div class="slide" data-index="2">
+        <div class="txt">
+         

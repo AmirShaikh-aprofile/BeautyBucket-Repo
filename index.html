@@ -1,301 +1,275 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>BeautyBucket — Shop Cosmetics</title>
-<style>
-  /* --- RESET + BASE --- */
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: Arial, sans-serif; background: #f9f9f9; color: #333; }
-  a, button { text-decoration: none; border: none; background: none; cursor: pointer; }
-  
-  /* --- HEADER --- */
-  .site-header { background: #ff4da6; color: #fff; padding: 16px; text-align: center; }
-  .site-header h1 { margin:0; font-size: 24px; }
-  .site-header .sub { font-size: 14px; opacity: 0.9; margin-top: 4px; }
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>BeautyBucket — Shop Cosmetics</title>
+  <style>
+    /* --- RESET + BASE --- */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: Arial, sans-serif; background: var(--bg-color); color: var(--text-color); }
+    a, button { text-decoration: none; border: none; background: none; cursor: pointer; }
 
-  /* --- FILTER / SORT TOGGLE BAR --- */
-  .top-bar { display: flex; align-items: center; justify-content: space-between; background: #fff; padding: 10px 16px; border-bottom: 1px solid #ddd; position: sticky; top: 0; z-index: 100; }
-  .filter-toggle { font-size: 20px; cursor: pointer; }
-  #pincodeInput { padding: 6px 8px; border:1px solid #ccc; border-radius:4px; width: 120px; }
-  #pincodeMessage { font-size:13px; color:#555; margin-left: 8px; }
-  #searchInput { flex:1; margin: 0 12px; padding: 8px 10px; border:1px solid #ccc; border-radius:4px; }
+    /* --- THEME VARIABLES (will be toggled) --- */
+    :root { /* Light theme defaults */
+      --bg-color: #f9f9f9;
+      --card-bg: #ffffff;
+      --text-color: #333333;
+      --muted-color: #777777;
+      --accent-color: #ff4da6;
+      --buy-btn-color: #25D366;
+      --buy-btn-hover: #1ebe55;
+      --card-shadow: rgba(0,0,0,0.06);
+    }
+    body.dark { /* Dark / alternate theme */
+      --bg-color: #1f1f1f;
+      --card-bg: #2a2a2a;
+      --text-color: #ececec;
+      --muted-color: #aaaaaa;
+      --accent-color: #ff79c6;
+      --buy-btn-color: #00b894;
+      --buy-btn-hover: #009876;
+      --card-shadow: rgba(0,0,0,0.4);
+    }
 
-  /* --- SIDEBAR FILTER PANEL (initially hidden) --- */
-  .filter-panel { position: fixed; top: 0; left: 0; height:100%; width: 260px; background: #fff; box-shadow: 2px 0 12px rgba(0,0,0,0.1); transform: translateX(-300px); transition: transform 0.3s ease; padding: 16px; z-index: 200; overflow-y: auto; }
-  .filter-panel.open { transform: translateX(0); }
-  .filter-panel h4 { margin-bottom: 8px; font-size: 16px; }
-  .filter-panel .section { margin-bottom: 20px; }
-  .filter-panel label { display: block; margin-bottom: 6px; font-size: 14px; cursor: pointer; }
+    /* --- HEADER --- */
+    .site-header { background: var(--accent-color); color: #fff; padding: 16px; text-align: center; }
+    .site-header h1 { margin: 0; font-size: 24px; }
+    .site-header .sub { font-size: 14px; opacity: 0.9; margin-top: 4px; }
 
-  .overlay { position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.4); opacity: 0; visibility: hidden; transition: opacity 0.3s; z-index: 150; }
-  .overlay.show { opacity: 1; visibility: visible; }
+    /* --- TOP BAR (search, pincode, filter toggle, theme toggle) --- */
+    .top-bar { display: flex; align-items: center; justify-content: space-between; background: var(--card-bg); padding: 10px 16px; border-bottom: 1px solid #ddd; position: sticky; top:0; z-index:100; }
+    .filter-toggle { font-size: 20px; cursor: pointer; color: var(--text-color); }
+    .theme-toggle { margin-left: 12px; padding: 6px 8px; background: var(--accent-color); color: #fff; border-radius:4px; font-size: 14px; }
+    #searchInput { flex:1; margin: 0 8px; padding: 8px 10px; border:1px solid #ccc; border-radius:4px; }
+    #pincodeInput { padding: 6px 8px; border:1px solid #ccc; border-radius:4px; width: 100px; }
+    #pincodeMessage { font-size:13px; color: var(--muted-color); margin-left: 8px; }
 
-  /* --- PRODUCT GRID & CARDS --- */
-  .container { max-width: 1100px; margin: 0 auto; padding: 0 16px; }
-  .products { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px,1fr)); gap: 16px; margin-bottom: 40px; }
+    /* --- FILTER PANEL --- */
+    .filter-panel { position: fixed; top:0; left:0; height:100%; width: 260px; background: var(--card-bg); box-shadow: 2px 0 12px var(--card-shadow); transform: translateX(-300px); transition: transform 0.3s ease; padding: 16px; z-index:200; overflow-y: auto; }
+    .filter-panel.open { transform: translateX(0); }
+    .filter-panel h4 { margin-bottom: 8px; font-size: 16px; color: var(--text-color); }
+    .filter-panel .section { margin-bottom: 20px; }
+    .filter-panel label { display: block; margin-bottom: 6px; font-size: 14px; cursor: pointer; color: var(--text-color); }
 
-  .product-card { background: #fff; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.06); overflow: hidden; display: flex; flex-direction: column; transition: transform 0.15s ease, box-shadow 0.15s ease; }
-  .product-card:hover { transform: translateY(-4px); box-shadow: 0 8px 20px rgba(0,0,0,0.1); }
+    .overlay { position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.4); opacity: 0; visibility: hidden; transition: opacity 0.3s; z-index:150; }
+    .overlay.show { opacity: 1; visibility: visible; }
 
-  .product-card .card-main { display: flex; flex-direction: column; }
-  .product-card img { width: 100%; height: auto; object-fit: contain; background: #fff; }
+    /* --- PRODUCTS GRID & CARDS --- */
+    .container { max-width: 1100px; margin: 0 auto; padding: 0 16px; }
+    .products { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; margin-bottom: 40px; }
 
-  .p-body { padding: 12px; display: flex; flex-direction: column; flex:1; }
-  .p-title { font-size: 18px; margin-bottom: 6px; color: #222; }
-  .p-cat { font-size: 13px; color: #555; margin-bottom: 8px; }
-  .p-details { font-size: 14px; color: #444; margin-bottom: 12px; flex:1; }
+    .product-card { background: var(--card-bg); border-radius: 8px; box-shadow: 0 4px 12px var(--card-shadow); overflow: hidden; display: flex; flex-direction: column; transition: transform 0.15s ease, box-shadow 0.15s ease; }
+    .product-card:hover { transform: translateY(-4px); box-shadow: 0 8px 20px var(--card-shadow); }
 
-  .prices { margin-top: auto; }
-  .prices .mrp { font-size: 14px; color: #888; text-decoration: line-through; }
-  .prices .sp { font-size: 16px; font-weight: bold; color: #000; margin-top: 4px; }
-  .prices .discount { font-size: 14px; color: #d10000; margin-top: 2px; }
+    .card-main { display: flex; flex-direction: column; }
 
-  .btn-buy { background: #25D366; color: #fff; padding: 10px; border-radius: 6px; font-size: 15px; text-align: center; margin-top: 12px; }
-  .stock { font-size: 13px; margin-top: 8px; }
+    .product-card img { width: 100%; height: auto; object-fit: contain; background: #fff; }
 
-  /* --- mobile: horizontal card layout --- */
-  @media (max-width: 600px) {
-    .product-card { flex-direction: row; }
-    .product-card img { width: 100px; height: auto; object-fit: contain; margin: 8px; }
-    .p-body { padding: 8px; }
-  }
-</style>
+    .p-body { padding: 12px; display: flex; flex-direction: column; flex:1; }
+    .p-title { font-size: 18px; margin-bottom: 6px; color: var(--text-color); }
+    .p-cat { font-size: 13px; color: var(--muted-color); margin-bottom: 8px; }
+    .p-details { font-size: 14px; color: var(--text-color); margin-bottom: 12px; flex:1; }
+
+    .prices { margin-top: auto; }
+    .prices .mrp { font-size: 14px; color: var(--muted-color); text-decoration: line-through; }
+    .prices .sp { font-size: 16px; font-weight: bold; color: var(--text-color); margin-top: 4px; }
+    .prices .discount { font-size: 14px; color: #d10000; margin-top: 2px; }
+
+    .btn-buy { background: var(--buy-btn-color); color: #fff; padding: 10px; border-radius: 6px; font-size: 15px; text-align: center; margin-top: 12px; }
+    .btn-buy:hover { background: var(--buy-btn-hover); }
+
+    .stock { font-size: 13px; margin-top: 8px; color: var(--text-color); }
+
+    /* --- MOBILE: horizontal card — image left, text right --- */
+    @media (max-width: 600px) {
+      .product-card { flex-direction: row; }
+      .product-card img { width: 100px; height: auto; object-fit: contain; margin: 8px; }
+      .p-body { padding: 8px; }
+      .prices .sp { font-size: 14px; }
+      .prices .mrp { font-size: 13px; }
+      .prices .discount { font-size: 12px; }
+      .btn-buy { padding: 8px; font-size: 14px; }
+    }
+  </style>
 </head>
 <body>
 
-<header class="site-header">
-  <h1>BeautyBucket</h1>
-  <div class="sub">Quality Cosmetics. Quick Delivery.</div>
-</header>
+  <header class="site-header">
+    <h1>BeautyBucket</h1>
+    <div class="sub">Quality Cosmetics. Quick Delivery.</div>
+  </header>
 
-<div class="top-bar">
-  <div class="filter-toggle">&#9776; Filters</div>
-  <input id="searchInput" placeholder="Search products...">
-  <input id="pincodeInput" placeholder="Pincode">
-  <div id="pincodeMessage"></div>
-</div>
-
-<div class="filter-panel" id="filterPanel">
-  <div class="section">
-    <h4>Category</h4>
-    <div id="categoryFilters"></div>
+  <div class="top-bar">
+    <div>
+      <span class="filter-toggle">&#9776; Filters</span>
+      <button class="theme-toggle" id="themeSwitch">🌙 Theme</button>
+    </div>
+    <input id="searchInput" placeholder="Search products...">
+    <input id="pincodeInput" placeholder="Pincode">
+    <div id="pincodeMessage"></div>
   </div>
-  <div class="section">
-    <h4>Sort By</h4>
-    <label><input type="radio" name="sort" value="none" checked> Default</label>
-    <label><input type="radio" name="sort" value="price-asc"> Price: Low → High</label>
-    <label><input type="radio" name="sort" value="price-desc"> Price: High → Low</label>
-    <label><input type="radio" name="sort" value="discount-desc"> Discount: High → Low</label>
+
+  <div class="filter-panel" id="filterPanel">
+    <div class="section">
+      <h4>Category</h4>
+      <div id="categoryFilters"></div>
+    </div>
+    <div class="section">
+      <h4>Sort By</h4>
+      <label><input type="radio" name="sort" value="none" checked> Default</label>
+      <label><input type="radio" name="sort" value="price-asc"> Price: Low → High</label>
+      <label><input type="radio" name="sort" value="price-desc"> Price: High → Low</label>
+      <label><input type="radio" name="sort" value="discount-desc"> Discount: High → Low</label>
+    </div>
+    <div class="section">
+      <label><input type="checkbox" id="inStockOnly"> In Stock Only</label>
+    </div>
+    <div class="section">
+      <button id="clearFilters">Clear Filters</button>
+    </div>
   </div>
-  <div class="section">
-    <button id="clearFilters">Clear Filters</button>
-  </div>
-</div>
-<div class="overlay" id="overlay"></div>
+  <div class="overlay" id="overlay"></div>
 
-<main class="container">
-  <div id="productList" class="products"></div>
-</main>
+  <main class="container">
+    <div id="productList" class="products"></div>
+  </main>
 
-<footer style="text-align:center; padding:16px; color:#777;">
-  &copy; BeautyBucket
-</footer>
+  <footer style="text-align:center; padding:16px; color: var(--muted-color);">
+    &copy; BeautyBucket
+  </footer>
 
-<script>
-  const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQA2pIOTPv2AVnMSWtlKLJeSXQXxTllgHn2gGYcdd_ZbHARLmclz_OXy009Aw9hJqgpc-RXIk_HXkK4/pub?gid=125100016&single=true&output=csv";
-  const LOCAL_PINCODES = ["411001","411002","411003","411028","411060","412308","412307","411036","411013"];
+  <script>
+    const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQA2pIOTPv2AVnMSWtlKLJeSXQXxTllgHn2gGYcdd_ZbHARLmclz_OXy009Aw9hJqgpc-RXIk_HXkK4/pub?gid=125100016&single=true&output=csv";
+    const LOCAL_PINCODES = ["411001","411002","411003","411028","411060","412308","412307","411036","411013"];
 
-  let allProducts = [];
-  let filters = {
-    categories: new Set(),
-    sort: 'none',
-    search: '',
-    inStockOnly: false
-  };
+    let allProducts = [];
+    let filters = { categories: new Set(), sort: 'none', search:'', inStockOnly: false };
 
-  function parseCSV(text) {
-    text = text.replace(/^\uFEFF/, '').trim();
-    const rows = []; let cur = ['']; let col=0; let inQuotes = false;
-    for (let i = 0; i < text.length; i++) {
-      const ch = text[i], nxt = text[i+1];
-      if (ch === '"') {
-        if (inQuotes && nxt === '"') { cur[col] += '"'; i++; continue; }
-        inQuotes = !inQuotes;
-        continue;
+    function parseCSV(text) {
+      text = text.replace(/^\uFEFF/, '').trim();
+      const rows = []; let cur=['']; let col=0; let inQuotes=false;
+      for (let i=0; i<text.length; i++) {
+        const ch = text[i], nxt = text[i+1];
+        if (ch === '"') {
+          if (inQuotes && nxt === '"') { cur[col] += '"'; i++; continue; }
+          inQuotes = !inQuotes; continue;
+        }
+        if (!inQuotes && ch === ',') { col++; cur[col]=''; continue; }
+        if (!inQuotes && (ch === '\n' || ch === '\r')) {
+          rows.push(cur); cur=['']; col=0;
+          if (ch==='\\r' && nxt==='\\n') i++;
+          continue;
+        }
+        cur[col] += ch;
       }
-      if (!inQuotes && ch === ',') { col++; cur[col]=''; continue; }
-      if (!inQuotes && (ch === '\n' || ch === '\r')) {
-        rows.push(cur);
-        cur = ['']; col = 0;
-        if (ch === '\r' && nxt === '\n') i++;
-        continue;
-      }
-      cur[col] += ch;
+      if (cur.length>1 || cur[0].trim()!=='') rows.push(cur);
+      const headers = rows.shift().map(h => h.trim());
+      return rows.map(r => {
+        const obj = {};
+        for (let i=0; i<headers.length; i++) obj[headers[i]] = (r[i]||'').trim();
+        return obj;
+      });
     }
-    if (cur.length > 1 || cur[0].trim() !== '') rows.push(cur);
-    const headers = rows.shift().map(h => h.trim());
-    return rows.map(r => {
-      const o = {};
-      for (let i =0;i<headers.length;i++){
-        o[headers[i]] = (r[i]||'').trim();
+
+    async function loadProducts() {
+      try {
+        const res = await fetch(CSV_URL);
+        const txt = await res.text();
+        allProducts = parseCSV(txt);
+        initFilters();
+        renderProducts();
+      } catch (err) {
+        console.error('CSV load error:', err);
+        document.getElementById('productList').innerHTML = '<div style="padding:20px; color:#c00;">Failed to load products.</div>';
       }
-      return o;
-    });
-  }
-
-  async function loadProducts() {
-    try {
-      const res = await fetch(CSV_URL);
-      const txt = await res.text();
-      allProducts = parseCSV(txt);
-      initFilters();
-      renderProducts();
-    } catch (err) {
-      console.error('Failed to load CSV', err);
-      document.getElementById('productList').innerHTML = '<div style="padding:20px; color:#c00;">Failed to load products.</div>';
     }
-  }
 
-  function initFilters(){
-    // categories
-    const cats = Array.from(new Set(allProducts.map(p => (p.Category||'').trim()).filter(Boolean)));
-    const container = document.getElementById('categoryFilters');
-    cats.forEach(c => {
-      const id = 'cat_' + c.replace(/\s+/g,'_');
-      const lbl = document.createElement('label');
-      lbl.innerHTML = `<input type="checkbox" id="${id}" value="${c}"> ${c}`;
-      container.append(lbl);
-      lbl.querySelector('input').addEventListener('change', e => {
-        if (e.target.checked) filters.categories.add(e.target.value);
-        else filters.categories.delete(e.target.value);
+    function initFilters(){
+      const cats = Array.from(new Set(allProducts.map(p => (p.Category||'').trim()).filter(Boolean)));
+      const container = document.getElementById('categoryFilters');
+      cats.forEach(c => {
+        const id = 'cat_' + c.replace(/\s+/g, '_');
+        const lbl = document.createElement('label');
+        lbl.innerHTML = `<input type="checkbox" id="${id}" value="${c}"> ${c}`;
+        container.append(lbl);
+        lbl.querySelector('input').addEventListener('change', e => {
+          if (e.target.checked) filters.categories.add(e.target.value);
+          else filters.categories.delete(e.target.value);
+          renderProducts();
+        });
+      });
+
+      document.querySelectorAll('input[name="sort"]').forEach(r => {
+        r.addEventListener('change', e => { filters.sort = e.target.value; renderProducts(); });
+      });
+
+      document.getElementById('searchInput').addEventListener('input', e => {
+        filters.search = e.target.value.trim().toLowerCase();
         renderProducts();
       });
-    });
 
-    // sort radio
-    document.querySelectorAll('input[name="sort"]').forEach(r => {
-      r.addEventListener('change', e => {
-        filters.sort = e.target.value;
+      document.getElementById('inStockOnly').addEventListener('change', e => {
+        filters.inStockOnly = e.target.checked;
         renderProducts();
       });
-    });
 
-    // search
-    document.getElementById('searchInput').addEventListener('input', e => {
-      filters.search = e.target.value.trim().toLowerCase();
-      renderProducts();
-    });
+      document.getElementById('clearFilters').addEventListener('click', () => {
+        filters = { categories: new Set(), sort: 'none', search:'', inStockOnly:false };
+        document.getElementById('searchInput').value = '';
+        document.getElementById('inStockOnly').checked = false;
+        document.querySelectorAll('#categoryFilters input[type=checkbox]').forEach(cb => cb.checked = false);
+        document.querySelector('input[name="sort"][value="none"]').checked = true;
+        renderProducts();
+      });
+    }
 
-    // clear
-    document.getElementById('clearFilters').addEventListener('click', () => {
-      filters.categories.clear();
-      filters.sort = 'none';
-      filters.search = '';
-      document.getElementById('searchInput').value = '';
-      document.querySelectorAll('#categoryFilters input[type=checkbox]').forEach(cb => cb.checked = false);
-      document.querySelector('input[name="sort"][value="none"]').checked = true;
-      renderProducts();
-    });
-  }
+    function renderProducts(){
+      const listEl = document.getElementById('productList');
+      listEl.innerHTML = '';
+      let items = allProducts.filter(p => {
+        if (filters.categories.size > 0 && !filters.categories.has((p.Category||'').trim())) return false;
+        if (filters.inStockOnly && (!(p.Stock) || parseInt(p.Stock) <= 0)) return false;
+        if (filters.search) {
+          const hay = (p.ProductName + ' ' + [p.Detail1,p.Detail2,p.Detail3,p.Detail4,p.Detail5].join(' ')).toLowerCase();
+          if (!hay.includes(filters.search)) return false;
+        }
+        return true;
+      });
 
-  function renderProducts(){
-    const listEl = document.getElementById('productList');
-    listEl.innerHTML = '';
-
-    let items = allProducts.filter(p => {
-      if (filters.categories.size > 0 && !filters.categories.has((p.Category||'').trim())) return false;
-      if (filters.search) {
-        const hay = (p.ProductName + ' ' + [p.Detail1,p.Detail2,p.Detail3,p.Detail4,p.Detail5].join(' ')).toLowerCase();
-        if (!hay.includes(filters.search)) return false;
+      if (filters.sort === 'price-asc' || filters.sort === 'price-desc') {
+        items.sort((a,b) => {
+          const pa = parseFloat(a.SellingPrice1pc) || 0;
+          const pb = parseFloat(b.SellingPrice1pc) || 0;
+          return filters.sort === 'price-asc' ? pa - pb : pb - pa;
+        });
+      } else if (filters.sort === 'discount-desc') {
+        items.sort((a,b) => {
+          const da = parseFloat(a.Discount1pcPercent) || 0;
+          const db = parseFloat(b.Discount1pcPercent) || 0;
+          return db - da;
+        });
       }
-      return true;
-    });
 
-    // Sort
-    if (filters.sort === 'price-asc' || filters.sort === 'price-desc') {
-      items = items.sort((a,b) => {
-        const pa = parseFloat(a.SellingPrice1pc) || 0;
-        const pb = parseFloat(b.SellingPrice1pc) || 0;
-        return filters.sort === 'price-asc' ? pa - pb : pb - pa;
-      });
-    } else if (filters.sort === 'discount-desc') {
-      items = items.sort((a,b) => {
-        const da = parseFloat(a.Discount1pcPercent) || 0;
-        const db = parseFloat(b.Discount1pcPercent) || 0;
-        return db - da;
-      });
-    }
+      if (items.length === 0) {
+        listEl.innerHTML = '<div style="padding:20px; color: var(--muted-color);">No products found</div>';
+        return;
+      }
 
-    if (items.length === 0) {
-      listEl.innerHTML = '<div style="padding:20px; color:#666;">No products found</div>';
-      return;
-    }
+      items.forEach(p => {
+        const mrp = p.MRP ? '₹'+parseFloat(p.MRP).toFixed(2) : '';
+        const sp1 = p.SellingPrice1pc ? '₹'+parseFloat(p.SellingPrice1pc).toFixed(2) : '';
+        const sp5 = p.SellingPrice5pc ? '₹'+parseFloat(p.SellingPrice5pc).toFixed(2) : '';
+        const d1 = p.Discount1pcPercent ? p.Discount1pcPercent + '% off' : '';
+        const d5 = p.Discount5pcPercent ? p.Discount5pcPercent + '% off' : '';
+        const inStock = p.Stock && parseInt(p.Stock) > 0;
 
-    items.forEach(p => {
-      const mrp = p.MRP ? '₹'+parseFloat(p.MRP).toFixed(2) : '';
-      const sp1 = p.SellingPrice1pc ? '₹'+parseFloat(p.SellingPrice1pc).toFixed(2) : '';
-      const sp5 = p.SellingPrice5pc ? '₹'+parseFloat(p.SellingPrice5pc).toFixed(2) : '';
-      const d1 = p.Discount1pcPercent ? p.Discount1pcPercent + '% off' : '';
-      const d5 = p.Discount5pcPercent ? p.Discount5pcPercent + '% off' : '';
-      const inStock = p.Stock && parseInt(p.Stock) > 0;
-
-      const card = document.createElement('div');
-      card.className = 'product-card';
-      card.innerHTML = `
-        <div class="card-main">
-          <img src="${p.ImageURL || 'images/placeholder.png'}" alt="${p.ProductName}" onerror="this.src='images/placeholder.png'">
-          <div class="p-body">
-            <h4 class="p-title">${p.ProductName || ''}</h4>
-            <div class="p-cat">${p.Category || ''}</div>
-            <div class="p-details">${[p.Detail1,p.Detail2,p.Detail3,p.Detail4,p.Detail5].filter(Boolean).join(', ')}</div>
-            <div class="prices">
-              ${ mrp ? `<div class="mrp">${mrp}</div>` : '' }
-              ${ sp1 ? `<div class="sp">1 pc: ${sp1}</div>` : '' }
-              ${ d1 ? `<div class="discount">${d1}</div>` : '' }
-              ${ sp5 ? `<div class="sp">5 pc: ${sp5}</div>` : '' }
-              ${ d5 ? `<div class="discount">${d5}</div>` : '' }
-            </div>
-            <button class="btn-buy" onclick="buyWhatsApp('${encodeURIComponent(p.ProductName)}')">Buy via WhatsApp</button>
-            <div class="stock">${ inStock ? 'In stock' : 'Out of stock' }</div>
-          </div>
-        </div>
-      `;
-      listEl.appendChild(card);
-    });
-  }
-
-  function buyWhatsApp(prod) {
-    const product = decodeURIComponent(prod);
-    const pincode = (document.getElementById('pincodeInput')||{value:''}).value.trim();
-    const msg = `Hi, I want to buy *${product}*.\nPincode: ${pincode || '-'}\nName:\nAddress:`;
-    window.open(`https://wa.me/918149520594?text=${encodeURIComponent(msg)}`, '_blank');
-  }
-
-  // filter panel toggle
-  const fp = document.getElementById('filterPanel');
-  const overlay = document.getElementById('overlay');
-  document.querySelector('.filter-toggle').addEventListener('click', () => {
-    fp.classList.toggle('open');
-    overlay.classList.toggle('show');
-  });
-  overlay.addEventListener('click', () => {
-    fp.classList.remove('open');
-    overlay.classList.remove('show');
-  });
-
-  // pincode message display
-  document.getElementById('pincodeInput').addEventListener('input', e => {
-    const pin = e.target.value.trim();
-    const msgEl = document.getElementById('pincodeMessage');
-    if (!pin) { msgEl.textContent = ''; return; }
-    if (LOCAL_PINCODES.includes(pin)) msgEl.textContent = 'Free delivery for this pincode.';
-    else msgEl.textContent = 'Delivery charges applicable.';
-  });
-
-  loadProducts();
-</script>
-
-</body>
-</html>
+        const card = document.createElement('div');
+        card.className = 'product-card';
+        card.innerHTML = `
+          <div class="card-main">
+            <img src="${p.ImageURL || 'images/placeholder.png'}" alt="${p.ProductName}" onerror="this.src='images/placeholder.png'">
+            <div class="p-body">
+              <h4 class="p-title">${p.ProductName || ''}</h4>
+              <div class="p-cat">${p.Category || ''}</div>
+              <div class="p-details">${[p.Detail1,p.Detail2,p.Detail3,p.D]()

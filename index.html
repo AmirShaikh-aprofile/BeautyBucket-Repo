@@ -105,4 +105,146 @@
       </div>
       <div class="slide" data-index="2">
         <div class="txt">
-         
+          <h2>Clean, cruelty-free formulas</h2>
+          <p>All our products are cruelty-free, vegan, and made with safe, ethical ingredients.</p>
+        </div>
+      </div>
+      <div class="nav">
+        <div class="arrow" id="prevSlide">←</div>
+        <div class="arrow" id="nextSlide">→</div>
+      </div>
+    </div>
+
+    <!-- PINCODE AND FILTER -->
+    <div class="top-bar">
+      <input type="text" id="searchInput" placeholder="Search products...">
+      <input type="text" id="pincodeInput" placeholder="Enter Pincode">
+    </div>
+    <div id="pincodeMessage">Enter the Pincode to check delivery options</div>
+
+    <!-- CATEGORY FILTER -->
+    <div class="filters-row" id="categoryFilters">
+      <button class="cat-btn">Skincare</button>
+      <button class="cat-btn">Makeup</button>
+      <button class="cat-btn">Haircare</button>
+    </div>
+
+    <!-- PRODUCT LIST -->
+    <div class="products" id="productList">
+      <!-- Dynamic products will be injected here -->
+    </div>
+
+    <button id="clearFiltersBtn" class="clear-filter-btn">Clear Filters</button>
+
+  </div>
+
+  <script>
+    // Add products fetching code here from your original URL
+    const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQA2pIOTPv2AVnMSWtlKLJeSXQXxTllgHn2gGYcdd_ZbHARLmclz_OXy009Aw9hJqgpc-RXIk_HXkK4/pub?gid=1550466309&single=true&output=csv";
+    let products = [];
+    let filteredProducts = [];
+
+    fetch(CSV_URL)
+      .then(response => response.text())
+      .then(data => {
+        // Parsing CSV data
+        const rows = data.split('\n').map(row => row.split(','));
+        products = rows.slice(1).map(row => ({
+          id: row[0],
+          name: row[1],
+          category: row[2],
+          price: parseFloat(row[3]),
+          discount: parseInt(row[4]),
+          stock: row[5] === 'In Stock',
+          imgUrl: row[6],
+          description: row[7],
+        }));
+        filteredProducts = [...products];
+        renderProducts(filteredProducts);
+      });
+
+    function renderProducts(products) {
+      const productList = document.getElementById('productList');
+      productList.innerHTML = '';
+      products.forEach(product => {
+        const productCard = document.createElement('div');
+        productCard.className = 'product-card';
+
+        productCard.innerHTML = `
+          <div class="imgwrap"><img src="${product.imgUrl}" alt="${product.name}"></div>
+          <div class="p-body">
+            <div class="p-title">${product.name}</div>
+            <div class="p-cat">${product.category}</div>
+            <div class="p-details">${product.description}</div>
+            <div class="prices">
+              <span class="mrp">${product.price + 100}</span>
+              <span class="sp">${product.price}</span>
+            </div>
+          </div>
+        `;
+        productList.appendChild(productCard);
+      });
+    }
+
+    // PINCODE DELIVERY MESSAGE
+    const pincodeInput = document.getElementById('pincodeInput');
+    const pincodeMessage = document.getElementById('pincodeMessage');
+    const validPincodesFree = ['411028', '411060', '412308', '412307', '411036', '411013'];
+    const validPincodesPortar = ['411004', '411040', '410506', '410509', '413132', '411032', '411035', '412411', '412205', '412201', '412105', '412211', '412206', '410507', '411042', '410401', '411046', '410501', '410505', '412218', '411003', '412408', '411051', '412410', '410502', '413114', '412212', '411021', '412401', '412207', '412404', '411007', '411027', '412406', '412402', '412405', '412204', '411002', '411045', '413102', '413133', '413103', '413801', '412108', '413104', '412303', '412203', '412209', '413130', '413105', '412301', '411026', '411039', '412106', '411038', '410513', '411037', '413106', '412202', '412208', '411001', '411031', '410503', '412114', '412409', '411019', '412101', '411005', '412213', '411012', '412305', '412311', '412109', '412214', '413110', '410508', '412403', '411043', '411015', '411041', '411014', '412216', '410516', '413120', '411016', '412210', '412102', '412104', '411028', '411013', '410504', '412306', '411025', '411057', '410402', '412215', '412107', '410403', '411017', '410405', '412412', '412219', '412220', '411052', '411034', '411011', '411024', '413116', '410301', '411048', '412103', '411023', '410511', '413802', '410512', '411047', '411030', '410510', '410515', '413115', '412307', '411018', '412304', '411036', '411008', '411044', '411009', '410406', '412308', '410302', '411020', '411022', '412110', '412312', '411058', '411006', '411060'];
+
+    pincodeInput.addEventListener('input', () => {
+      const pincode = pincodeInput.value.trim();
+      if (validPincodesFree.includes(pincode)) {
+        pincodeMessage.textContent = "Free Instance Delivery For You";
+        pincodeMessage.style.fontWeight = "bold";
+      } else if (validPincodesPortar.includes(pincode)) {
+        pincodeMessage.textContent = "Instance Delivery with Portar";
+      } else {
+        pincodeMessage.textContent = "Delivery charges is Applicable";
+      }
+    });
+
+    // Filter clear button logic
+    const clearFiltersBtn = document.getElementById('clearFiltersBtn');
+    const categoryButtons = document.querySelectorAll('.cat-btn');
+
+    let selectedCategories = [];
+    categoryButtons.forEach(button => {
+      button.addEventListener('click', () => {
+        button.classList.toggle('active');
+        const category = button.textContent;
+        if (button.classList.contains('active')) {
+          selectedCategories.push(category);
+        } else {
+          selectedCategories = selectedCategories.filter(c => c !== category);
+        }
+
+        // Filter the products based on selected categories
+        if (selectedCategories.length > 0) {
+          filteredProducts = products.filter(p => selectedCategories.includes(p.category));
+        } else {
+          filteredProducts = [...products];
+        }
+
+        renderProducts(filteredProducts);
+
+        // Show the clear filter button if multiple categories are selected
+        if (selectedCategories.length > 0) {
+          clearFiltersBtn.style.display = 'inline-block';
+        } else {
+          clearFiltersBtn.style.display = 'none';
+        }
+      });
+    });
+
+    clearFiltersBtn.addEventListener('click', () => {
+      categoryButtons.forEach(button => button.classList.remove('active'));
+      selectedCategories = [];
+      filteredProducts = [...products];
+      renderProducts(filteredProducts);
+      clearFiltersBtn.style.display = 'none';
+    });
+
+  </script>
+</body>
+</html>

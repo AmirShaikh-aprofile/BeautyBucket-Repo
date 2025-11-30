@@ -22,7 +22,6 @@ a,button{font-family:inherit;cursor:pointer}
 .brand{font-weight:700;font-size:20px}
 .sub{font-size:13px;opacity:0.95;margin-top:4px}
 .controls{display:flex;gap:8px;align-items:center}
-.icon-btn{background:var(--glass);border-radius:10px;padding:8px 10px;border:0;color:var(--text)}
 .dark-toggle{padding:8px;border-radius:10px;background:transparent;color:#fff;border:1px solid rgba(255,255,255,0.12)}
 .hero{margin:16px 0 8px;position:relative;border-radius:12px;overflow:hidden;height:220px;box-shadow:0 12px 40px rgba(16,24,40,0.06)}
 .slide{position:absolute;inset:0;display:flex;align-items:center;padding:28px;transition:opacity .6s ease,transform .45s ease;opacity:0;transform:translateY(6px);background-size:cover;background-position:center}
@@ -148,11 +147,9 @@ a,button{font-family:inherit;cursor:pointer}
 <script>
 const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQA2pIOTPv2AVnMSWtlKLJeSXQXxTllgHn2gGYcdd_ZbHARLmclz_OXy009Aw9hJqgpc-RXIk_HXkK4/pub?gid=1550466309&single=true&output=csv";
 const PLACEHOLDER = "https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?w=900&q=80&auto=format&fit=crop";
-let allProducts = [], visible = [], filters = { categories: new Set(), sort: 'none', search: '' };
-const BATCH = 12; let renderedCount = 0; let loading = false;
-
+let allProducts = [], visible = [], filters = { categories: new Set(), search: '' };
 const FREE_PINCODES = ['411028','411060','412308','412307','411036','411013'];
-const PORTAR_PINCODES = [/* all other Pune pincodes as provided */]; // truncated for brevity
+const PORTAR_PINCODES = [/* all other Pune pincodes */]; // truncated
 
 function updatePincodeMessage(){
   const val = document.getElementById('pincodeInput').value.trim();
@@ -188,6 +185,7 @@ function fetchProducts(){
       p.discount = Math.round(((p.mrp - p.price)/p.mrp)*100);
       p.images = p.ImageURL ? p.ImageURL.split('|') : [PLACEHOLDER];
     });
+    renderCategoryFilters();
     renderProducts();
   }).catch(e=>{
     document.getElementById('spinner').style.display='none';
@@ -197,10 +195,45 @@ function fetchProducts(){
   });
 }
 
+function renderCategoryFilters(){
+  const container = document.getElementById('categoryFilters');
+  container.innerHTML = '';
+  const categories = Array.from(new Set(allProducts.map(p=>p.category)));
+  categories.forEach(cat=>{
+    const btn = document.createElement('button');
+    btn.className='cat-btn';
+    btn.textContent=cat;
+    btn.onclick = ()=>{
+      if(filters.categories.has(cat)) filters.categories.delete(cat);
+      else filters.categories.add(cat);
+      updateFilterUI();
+      renderProducts();
+    };
+    container.appendChild(btn);
+  });
+}
+
+function updateFilterUI(){
+  document.querySelectorAll('.cat-btn').forEach(btn=>{
+    btn.classList.toggle('active', filters.categories.has(btn.textContent));
+  });
+  document.getElementById('clearFilters').style.display = filters.categories.size>0 ? 'inline-block' : 'none';
+}
+
+document.getElementById('clearFilters').onclick=()=>{
+  filters.categories.clear();
+  updateFilterUI();
+  renderProducts();
+};
+
 function renderProducts(){
   const container = document.getElementById('productList');
   container.innerHTML = '';
-  allProducts.forEach(p=>{
+  let filtered = allProducts.filter(p=>{
+    return (filters.categories.size===0 || filters.categories.has(p.category)) &&
+           (p.Name.toLowerCase().includes(filters.search.toLowerCase()));
+  });
+  filtered.forEach(p=>{
     const card = document.createElement('div');
     card.className='product-card';
     card.innerHTML = `
@@ -222,6 +255,11 @@ function renderProducts(){
   });
   document.getElementById('spinner').style.display='none';
 }
+
+document.getElementById('searchInput').addEventListener('input',(e)=>{
+  filters.search = e.target.value;
+  renderProducts();
+});
 
 fetchProducts();
 </script>

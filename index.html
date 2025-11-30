@@ -1,227 +1,217 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>BeautyBucket — Quality Cosmetics. Quick Delivery.</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>BeautyBucket — Shop Cosmetics</title>
   <style>
-    body { margin:0; font-family: sans-serif; }
-    .site-header { padding:16px; background:#f8f8f8; border-bottom:1px solid #ddd; }
-    .brand h1 { margin:0; }
-    .header-sub { font-size:13px; opacity:.7; }
+    /* basic reset & typography */
+    * { box-sizing: border-box; margin:0; padding:0; }
+    body { font-family: Arial, sans-serif; background: #f9f9f9; color: #333; }
+    a { text-decoration: none; color: inherit; }
+    button { cursor: pointer; }
 
-    main { display:flex; flex-wrap:wrap; }
-    .sidebar { flex:1 1 200px; padding:16px; background:#fafafa; border-right:1px solid #ddd; }
-    .content { flex:3 1 0; padding:16px; }
-    .category-list { list-style:none; padding:0; }
-    .category-list li { cursor:pointer; padding:6px 0; }
-    .category-list li.active { font-weight:bold; }
-    .products { display:grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap:16px; }
-    .product-card { border:1px solid #ddd; border-radius:8px; overflow:hidden; display:flex; flex-direction:column; }
-    .product-card img { width:100%; height:auto; object-fit:contain; background:#fff; }
-    .p-body { padding:12px; flex:1; display:flex; flex-direction:column; }
-    .p-title { margin:0 0 8px; font-size:18px; }
-    .p-cat { font-size:13px; color:#555; margin-bottom:8px; }
-    .p-details { font-size:14px; color:#444; margin-bottom:12px; }
-    .prices { margin-bottom:12px; }
-    .prices .mrp { color:#888; text-decoration: line-through; }
-    .discount-label { display:block; font-size:14px; color:#d10000; margin-top:4px; }
-    .btn-whatsapp { background: #25D366; color: white; border: none; padding: 10px 14px; text-align: center; border-radius:6px; font-size:15px; cursor:pointer; }
-    @media (max-width: 600px) {
-      main { flex-direction: column; }
-      .sidebar { border-right: none; border-bottom:1px solid #ddd; }
+    /* header */
+    .site-header { background: #ff4da6; color: white; text-align: center; padding: 16px; }
+    .site-header h1 { margin: 0; font-size: 24px; }
+    .site-header .sub { font-size: 14px; opacity: 0.9; }
+
+    /* layout */
+    .container { display: flex; flex-wrap: wrap; max-width: 1100px; margin: auto; padding: 16px; }
+    .sidebar { flex: 1 1 220px; background: white; padding: 16px; border-radius: 8px; margin-bottom:16px; }
+    .content { flex: 3 1 0; padding-left: 16px; }
+
+    /* filters */
+    .filter-group { margin-bottom: 20px; }
+    .filter-group h4 { margin-bottom: 8px; font-size: 16px; }
+    .filter-group label { display: block; margin-bottom: 6px; font-size: 14px; cursor: pointer; }
+
+    /* search bar */
+    #searchInput { width: 100%; padding: 8px 10px; border: 1px solid #ccc; border-radius: 6px; margin-bottom: 16px; }
+
+    /* products grid */
+    .products { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; }
+    .product-card { background: white; border-radius: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); overflow: hidden; display: flex; flex-direction: column; }
+    .product-card img { width:100%; object-fit: contain; background: #fff; }
+    .p-body { padding: 12px; flex: 1; display: flex; flex-direction: column; }
+    .p-title { font-size: 18px; margin-bottom: 6px; }
+    .p-cat { font-size: 13px; color: #777; margin-bottom: 8px; }
+    .p-details { font-size: 14px; color: #555; margin-bottom: 12px; }
+    .prices { margin-top: auto; }
+    .prices .mrp { color: #888; text-decoration: line-through; font-size: 14px; }
+    .prices .discount { color: #d6336c; font-weight: bold; margin-top: 4px; font-size: 15px; }
+    .btn-buy { background: #25D366; color: white; border: none; padding: 10px; border-radius: 6px; font-size: 15px; margin-top:12px; }
+    .stock { margin-top:8px; font-size: 13px; color: #2b7a0b; }
+
+    @media (max-width: 800px) {
+      .container { flex-direction: column; }
+      .content { padding-left: 0; }
     }
   </style>
 </head>
 <body>
 
-<header class="site-header">
-  <div class="brand">
+  <header class="site-header">
     <h1>BeautyBucket</h1>
-    <div class="header-sub">Quality Cosmetics. Quick Delivery.</div>
-  </div>
-</header>
+    <div class="sub">Quality Cosmetics. Quick Delivery.</div>
+  </header>
 
-<main>
-  <aside class="sidebar" aria-label="Categories">
-    <h3>Categories</h3>
-    <ul id="categoryList" class="category-list">
-      <!-- will be populated -->
-    </ul>
-    <h4 style="margin-top:20px;">Filter by pincode</h4>
-    <input id="pincodeInput" placeholder="Enter pincode" style="width:100%; padding:6px; margin-top:6px;" />
-    <div id="pincodeMessage" style="margin-top:8px; font-size:13px; color:#555;"></div>
-  </aside>
-
-  <section class="content" aria-live="polite">
-    <div style="margin-bottom:16px;">
-      <input id="searchInput" placeholder="Search products..." style="width:100%; padding:8px; font-size:15px;" />
-    </div>
-    <div id="productList" class="products">
-      <!-- product cards will be inserted here -->
-    </div>
-  </section>
-</main>
-
-<footer style="padding:12px; text-align:center; background:#f8f8f8; border-top:1px solid #ddd;">
-  <small>© BeautyBucket</small>
-</footer>
-
-<script>
-const PRODUCTS_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQA2pIOTPv2AVnMSWtlKLJeSXQXxTllgHn2gGYcdd_ZbHARLmclz_OXy009Aw9hJqgpc-RXIk_HXkK4/pub?gid=125100016&single=true&output=csv";
-
-const LOCAL_PINCODES = ["411001","411002","411003"];
-const CITY_PREFIX = "411";
-
-function parseCSV(text) {
-  text = text.replace(/^\uFEFF/, '').trim();
-  const rows = [];
-  let current = [''], col = 0, inQuotes = false;
-  for (let i = 0; i < text.length; i++) {
-    const ch = text[i], next = text[i+1];
-    if (ch === '"') {
-      if (inQuotes && next === '"') { current[col] += '"'; i++; continue; }
-      inQuotes = !inQuotes;
-      continue;
-    }
-    if (!inQuotes && ch === ',') { col++; current[col] = ''; continue; }
-    if (!inQuotes && (ch === '\n' || ch === '\r')) {
-      rows.push(current);
-      current = ['']; col = 0;
-      if (ch === '\r' && next === '\n') i++;
-      continue;
-    }
-    current[col] += ch;
-  }
-  if (current.length > 1 || current[0].trim() !== '') rows.push(current);
-  const headers = rows.shift().map(h => h.trim());
-  return rows.map(r => {
-    const obj = {};
-    for (let i=0;i<headers.length;i++) obj[headers[i]] = (r[i] || '').trim();
-    return obj;
-  });
-}
-
-function formatPrice(v) {
-  if (!v) return '—';
-  const n = parseFloat((''+v).replace(/[^0-9.\-]/g, ''));
-  return isNaN(n) ? '—' : '₹' + n.toFixed(2);
-}
-
-let allProducts = [];
-
-function renderCategories() {
-  const cats = Array.from(new Set(allProducts.map(p => (p.Category||'').trim() )));
-  const ul = document.getElementById('categoryList');
-  ul.innerHTML = '';
-  const liAll = document.createElement('li');
-  liAll.textContent = 'All Products';
-  liAll.className = 'active';
-  liAll.onclick = () => {
-    document.querySelectorAll('.category-list li').forEach(e => e.classList.remove('active'));
-    liAll.classList.add('active');
-    renderProducts(allProducts);
-  };
-  ul.appendChild(liAll);
-  cats.forEach(c => {
-    if (!c) return;
-    const li = document.createElement('li');
-    li.textContent = c;
-    li.onclick = () => {
-      document.querySelectorAll('.category-list li').forEach(e => e.classList.remove('active'));
-      li.classList.add('active');
-      renderProducts(allProducts.filter(p => (p.Category||'').trim() === c));
-    };
-    ul.appendChild(li);
-  });
-}
-
-function renderProducts(list) {
-  const container = document.getElementById('productList');
-  container.innerHTML = '';
-  if (!list || list.length === 0) {
-    container.innerHTML = '<div style="padding:20px; text-align:center; color:#666;">No products found</div>';
-    return;
-  }
-
-  list.forEach(p => {
-    if (!p.ProductName) return;
-    const stock = parseInt(p.Stock || '0') || 0;
-
-    const card = document.createElement('div');
-    card.className = 'product-card';
-    card.innerHTML = `
-      <img src="${p.ImageURL || 'images/placeholder.png'}" alt="${p.ProductName}" onerror="this.src='images/placeholder.png'"/>
-      <div class="p-body">
-        <h4 class="p-title">${p.ProductName}</h4>
-        <div class="p-cat">${p.Category}</div>
-        <div class="p-details">${[
-          p.Detail1, p.Detail2, p.Detail3, p.Detail4, p.Detail5
-        ].filter(Boolean).join(', ')}</div>
-
-        <div class="prices">
-          <div class="mrp">${formatPrice(p.MRP)}</div>
-          ${p.Discount1pcPercent ? 
-            `<div class="discount-label">1 pc Discount – ${p.Discount1pcPercent}% off</div>` : ''}
-          ${p.Discount5pcPercent ? 
-            `<div class="discount-label">5 pc Discount – ${p.Discount5pcPercent}% off</div>` : ''}
-        </div>
-
-        <button class="btn-whatsapp" onclick="buyWhatsApp('${encodeURIComponent(p.ProductName)}')">
-          Buy via WhatsApp
-        </button>
-
-        <div style="margin-top:8px; font-size:13px; color:${stock > 0 ? '#2b7a0b':'#c00'};">
-          ${stock > 0 ? 'In stock' : 'Out of stock'}
-        </div>
+  <div class="container">
+    <aside class="sidebar">
+      <div class="filter-group">
+        <h4>Search Products</h4>
+        <input type="text" id="searchInput" placeholder="Search...">
       </div>
-    `;
-    container.appendChild(card);
-  });
-}
 
-function buyWhatsApp(productEncoded) {
-  const product = decodeURIComponent(productEncoded || '');
-  const msg = `Hi, I want to buy *${product}*.\nName:\nAddress:`;
-  const wa = `https://wa.me/918149520594?text=${encodeURIComponent(msg)}`;
-  window.open(wa, '_blank');
-}
+      <div class="filter-group" id="categoryFilter">
+        <h4>Filter by Category</h4>
+        <!-- categories checkboxes will be inserted here -->
+      </div>
 
-async function loadProductsFromCsv() {
-  try {
-    const res = await fetch(PRODUCTS_CSV_URL);
-    if (!res.ok) throw new Error('CSV fetch failed: ' + res.status);
-    const text = await res.text();
-    const rows = parseCSV(text);
-    allProducts = rows;
-    renderCategories();
-    renderProducts(allProducts);
-  } catch (err) {
-    console.error(err);
-    document.getElementById('content').innerHTML = '<div style="padding:20px; color:#c00;">Failed to load products.</div>';
-  }
-}
+      <div class="filter-group">
+        <label><input type="checkbox" id="inStockOnly"> In Stock Only</label>
+      </div>
 
-document.getElementById('searchInput').addEventListener('input', e => {
-  const q = (e.target.value || '').trim().toLowerCase();
-  renderProducts(allProducts.filter(p =>
-    ((p.ProductName||'') + ' ' + ([
-      p.Detail1, p.Detail2, p.Detail3, p.Detail4, p.Detail5
-    ].join(' '))).toLowerCase().includes(q)
-  ));
-});
+      <button id="clearFilters">Clear Filters</button>
+    </aside>
 
-document.getElementById('pincodeInput').addEventListener('input', e => {
-  const pin = e.target.value.trim();
-  const msgEl = document.getElementById('pincodeMessage');
-  if (!pin) { msgEl.textContent = ''; return; }
-  if (LOCAL_PINCODES.includes(pin)) msgEl.textContent = 'Free delivery for this pincode.';
-  else if (pin.startsWith(CITY_PREFIX)) msgEl.textContent = 'Porter service charges for Pune.';
-  else msgEl.textContent = 'Delivery charges applicable.';
-});
+    <section class="content">
+      <div id="productList" class="products"></div>
+    </section>
+  </div>
 
-loadProductsFromCsv();
-</script>
+  <footer style="text-align:center; padding:16px; color:#777;">
+    &copy; BeautyBucket
+  </footer>
 
+  <script>
+    const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQA2pIOTPv2AVnMSWtlKLJeSXQXxTllgHn2gGYcdd_ZbHARLmclz_OXy009Aw9hJqgpc-RXIk_HXkK4/pub?gid=125100016&single=true&output=csv";
+
+    let allProducts = [];
+    let activeFilters = { categories: new Set(), inStock: false, search: '' };
+
+    function parseCSV(text) {
+      text = text.replace(/^\uFEFF/, '').trim();
+      const rows = []; let cur = ['']; let col=0, inQuotes=false;
+      for (let i=0; i<text.length; i++) {
+        const ch = text[i], nxt = text[i+1];
+        if (ch === '"') {
+          if (inQuotes && nxt === '"') { cur[col] += '"'; i++; continue; }
+          inQuotes = !inQuotes; continue;
+        }
+        if (!inQuotes && ch === ',') { col++; cur[col]=''; continue; }
+        if (!inQuotes && (ch === '\n' || ch === '\r')) {
+          rows.push(cur);
+          cur = ['']; col=0;
+          if (ch === '\r' && nxt === '\n') i++;
+          continue;
+        }
+        cur[col] += ch;
+      }
+      if (cur.length>1 || cur[0].trim()!=='') rows.push(cur);
+      const headers = rows.shift().map(h => h.trim());
+      return rows.map(r => {
+        const o = {};
+        for (let i=0; i<headers.length; i++) o[headers[i]] = (r[i]||'').trim();
+        return o;
+      });
+    }
+
+    function loadProducts() {
+      fetch(CSV_URL).then(r => r.text()).then(t => {
+        allProducts = parseCSV(t);
+        setupFilters();
+        render();
+      }).catch(err => console.error("CSV load error:", err));
+    }
+
+    function setupFilters() {
+      const cats = Array.from(new Set(allProducts.map(p => p.Category || '').filter(Boolean)));
+      const container = document.getElementById('categoryFilter');
+      cats.forEach(c => {
+        const id = 'cat_'+c.replace(/\s+/g,'_');
+        const lbl = document.createElement('label');
+        lbl.style.display = 'block';
+        lbl.innerHTML = `<input type="checkbox" id="${id}" value="${c}"> ${c}`;
+        container.append(lbl);
+        document.getElementById(id).addEventListener('change', e => {
+          if (e.target.checked) activeFilters.categories.add(e.target.value);
+          else activeFilters.categories.delete(e.target.value);
+          render();
+        });
+      });
+
+      document.getElementById('inStockOnly').addEventListener('change', e => {
+        activeFilters.inStock = e.target.checked;
+        render();
+      });
+
+      document.getElementById('searchInput').addEventListener('input', e => {
+        activeFilters.search = e.target.value.trim().toLowerCase();
+        render();
+      });
+
+      document.getElementById('clearFilters').addEventListener('click', () => {
+        activeFilters.categories.clear();
+        activeFilters.inStock = false;
+        activeFilters.search = '';
+        document.getElementById('inStockOnly').checked = false;
+        document.getElementById('searchInput').value = '';
+        document.querySelectorAll('#categoryFilter input[type=checkbox]').forEach(cb => cb.checked = false);
+        render();
+      });
+    }
+
+    function render() {
+      const listEl = document.getElementById('productList');
+      listEl.innerHTML = '';
+
+      const filtered = allProducts.filter(p => {
+        if (activeFilters.inStock && (!(p.Stock) || parseInt(p.Stock) <= 0)) return false;
+        if (activeFilters.categories.size > 0 && !activeFilters.categories.has(p.Category)) return false;
+        if (activeFilters.search) {
+          const hay = (p.ProductName + ' ' + (p.Detail1||'') + ' ' + (p.Detail2||'') + ' ' + (p.Detail3||'') + ' ' + (p.Detail4||'') + ' ' + (p.Detail5||'')).toLowerCase();
+          if (!hay.includes(activeFilters.search)) return false;
+        }
+        return true;
+      });
+
+      if (filtered.length === 0) {
+        listEl.innerHTML = '<div style="padding:20px; color:#666;">No products found</div>';
+        return;
+      }
+
+      filtered.forEach(p => {
+        const card = document.createElement('div');
+        card.className = 'product-card';
+        card.innerHTML = `
+          <img src="${p.ImageURL || 'images/placeholder.png'}" alt="${p.ProductName}" onerror="this.src='images/placeholder.png'">
+          <div class="p-body">
+            <h4 class="p-title">${p.ProductName}</h4>
+            <div class="p-cat">${p.Category}</div>
+            <div class="p-details">${[p.Detail1,p.Detail2,p.Detail3,p.Detail4,p.Detail5].filter(Boolean).join(', ')}</div>
+
+            <div class="prices">
+              <div class="mrp">${p.MRP ? '₹'+parseFloat(p.MRP).toFixed(2) : ''}</div>
+              ${p.Discount1pcPercent ? `<div class="discount">1 pc Discount – ${p.Discount1pcPercent}% off</div>` : ''}
+              ${p.Discount5pcPercent ? `<div class="discount">5 pc Discount – ${p.Discount5pcPercent}% off</div>` : ''}
+            </div>
+
+            <button class="btn-buy" onclick="buyWhatsApp('${encodeURIComponent(p.ProductName)}')">Buy via WhatsApp</button>
+            <div class="stock">${(p.Stock && parseInt(p.Stock) > 0) ? 'In stock' : 'Out of stock'}</div>
+          </div>
+        `;
+        listEl.append(card);
+      });
+    }
+
+    function buyWhatsApp(prod) {
+      const product = decodeURIComponent(prod);
+      const msg = `Hi, I want to buy *${product}*.\nName:\nAddress:`;
+      window.open(`https://wa.me/918149520594?text=${encodeURIComponent(msg)}`, '_blank');
+    }
+
+    loadProducts();
+  </script>
 </body>
 </html>

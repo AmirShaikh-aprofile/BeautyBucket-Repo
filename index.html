@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>BeautyBucket — Shop Cosmetics</title>
   <style>
-    /* ... your existing CSS unchanged ... */
     * { box-sizing: border-box; margin:0; padding:0; }
     body { font-family: Arial, sans-serif; background: #f9f9f9; color: #333; }
     a, button { text-decoration: none; border: none; background: none; cursor: pointer; }
@@ -14,39 +13,14 @@
     .site-header .sub { font-size: 14px; opacity:0.9; margin-top: 4px; }
 
     .top-bar {
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      gap: 8px;
-      background: #fff;
-      padding: 10px 16px;
-      border-bottom: 1px solid #ddd;
-      position: sticky;
-      top: 0;
-      z-index: 100;
+      display: flex; flex-wrap: wrap; align-items: center; gap: 8px;
+      background: #fff; padding: 10px 16px; border-bottom: 1px solid #ddd;
+      position: sticky; top: 0; z-index: 100;
     }
     .filter-toggle { font-size: 20px; cursor: pointer; flex: 0 0 auto; }
-    #searchInput {
-      flex: 1 1 auto;
-      min-width: 120px;
-      padding: 8px 10px;
-      border: 1px solid #ccc;
-      border-radius: 4px;
-    }
-    #pincodeInput {
-      flex: 0 0 auto;
-      min-width: 80px;
-      padding: 6px 8px;
-      border: 1px solid #ccc;
-      border-radius: 4px;
-    }
-    #pincodeMessage {
-      flex: 1 1 100%;
-      margin-left: 0;
-      margin-top: 4px;
-      font-size: 13px;
-      color: #555;
-    }
+    #searchInput { flex: 1 1 auto; min-width: 120px; padding: 8px 10px; border: 1px solid #ccc; border-radius: 4px; }
+    #pincodeInput { flex: 0 0 auto; min-width: 80px; padding: 6px 8px; border: 1px solid #ccc; border-radius: 4px; }
+    #pincodeMessage { flex: 1 1 100%; margin-left: 0; margin-top: 4px; font-size: 13px; color: #555; }
 
     .filter-panel { position: fixed; top:0; left:0; height:100%; width:260px; background:#fff;
       box-shadow:2px 0 12px rgba(0,0,0,0.1); transform: translateX(-300px); transition: transform 0.3s ease;
@@ -62,36 +36,28 @@
     }
     .overlay.show { opacity:1; visibility:visible; }
 
-    .container { max-width:1100px; margin:0 auto; padding:0 16px; }
+    .container { max-width:1100px; margin:0 auto; padding:16px; }
     .products { display: flex; flex-direction: column; gap:12px; margin-bottom:40px; }
 
     .product-card {
       background:#fff; border-radius:8px; box-shadow:0 4px 12px rgba(0,0,0,0.06);
       overflow:hidden; display:flex; flex-direction: row; align-items:center;
-      transition: transform 0.15s ease, box-shadow 0.15s ease;
-      position: relative;
+      transition: transform 0.15s ease, box-shadow 0.15s ease; position: relative;
+      padding:8px;
     }
     .product-card:hover { transform: translateY(-3px); box-shadow:0 6px 18px rgba(0,0,0,0.1); }
 
     .product-card img {
-      flex-shrink: 0;
-      width: 100px; height: auto;
-      object-fit: contain;
-      background:#fff;
-      margin: 8px;
+      flex-shrink: 0; width: 100px; height: 100px; object-fit: contain; background:#fff; margin: 8px;
+      border-radius:6px;
     }
 
-    .p-body {
-      padding:12px;
-      display:flex;
-      flex-direction:column;
-      flex:1;
-    }
-    .p-title { font-size:18px; margin-bottom:6px; color:#222; }
+    .p-body { padding:12px; display:flex; flex-direction:column; flex:1; }
+    .p-title { font-size:18px; margin-bottom:6px; color:#222; display:flex; align-items:center; gap:8px; }
     .p-cat { font-size:13px; color:#555; margin-bottom:8px; }
     .p-details { font-size:14px; color:#444; margin-bottom:8px; }
 
-    .prices { margin-top:auto; }
+    .prices { margin-top:auto; display:flex; gap:12px; flex-wrap:wrap; align-items:center; }
     .prices .mrp { font-size:14px; color:#888; text-decoration: line-through; }
     .prices .sp { font-size:16px; font-weight:bold; color:#000; margin-top:4px; }
     .prices .discount { font-size:14px; color:#d10000; margin-top:2px; }
@@ -105,6 +71,37 @@
       background: rgba(255,0,0,0.8); color:#fff;
       padding:4px 6px; font-size:12px; font-weight:bold;
       border-radius:4px; z-index:10;
+    }
+
+    /* wishlist heart */
+    .heart { margin-left:auto; font-size:20px; cursor:pointer; color:#bbb; }
+    .heart.faved { color:#e91e63; }
+
+    /* spinner */
+    .spinner-wrap { display:flex; align-items:center; justify-content:center; padding:30px; }
+    .spinner {
+      width:44px; height:44px; border-radius:50%; border:5px solid rgba(0,0,0,0.08);
+      border-top-color:#ff4da6; animation:spin 1s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* modal */
+    .modal { position:fixed; inset:0; display:none; align-items:center; justify-content:center; z-index:1000; }
+    .modal.show { display:flex; }
+    .modal-backdrop { position:absolute; inset:0; background: rgba(0,0,0,0.6); }
+    .modal-card { position:relative; background:#fff; width:90%; max-width:900px; border-radius:8px; padding:16px; z-index:1001; max-height:90vh; overflow:auto; }
+    .modal-gallery { display:flex; gap:8px; align-items:center; }
+    .modal-gallery img { width:180px; height:180px; object-fit:contain; border-radius:6px; }
+    .modal-close { position:absolute; right:12px; top:12px; font-size:22px; cursor:pointer; }
+
+    /* load-more sentinel */
+    .sentinel { height:1px; }
+    @media (min-width:800px) {
+      .products { flex-direction: row; flex-wrap:wrap; gap:18px; }
+      .product-card { width: calc(50% - 18px); }
+    }
+    @media (min-width:1200px) {
+      .product-card { width: calc(33.333% - 18px); }
     }
   </style>
 </head>
@@ -142,20 +139,39 @@
 
   <main class="container">
     <div id="productList" class="products"></div>
+    <div id="spinner" class="spinner-wrap" style="display:none;"><div class="spinner"></div></div>
+    <div id="errorMsg" style="padding:20px; color:#c00; display:none;"></div>
+    <div class="sentinel" id="sentinel"></div>
   </main>
+
+  <!-- Modal -->
+  <div id="modal" class="modal" aria-hidden="true">
+    <div class="modal-backdrop" onclick="closeModal()"></div>
+    <div class="modal-card" role="dialog" aria-modal="true">
+      <div class="modal-close" onclick="closeModal()">✕</div>
+      <div id="modalContent"></div>
+    </div>
+  </div>
 
   <footer style="text-align:center; padding:16px; color:#777;">
     &copy; BeautyBucket
   </footer>
 
   <script>
-    const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQA2pIOTPv2AVnMSWtlKLJeSXQXxTllgHn2gGYcdd_ZbHARLmclz_OXy009Aw9hJqgpc-RXIk_HXkK4/pub?gid=1550466309&single=true&output=csv";
+    // ← UPDATE THIS with your published CSV URL (must be final published link)
+    const CSV_URL = "PASTE_YOUR_PUBLISHED_CSV_URL_HERE";
 
     const FREE_PINCODES = ["411028","411060","412308","412307","411036","411013"];
-
     let allProducts = [];
+    let visible = []; // filtered+sorted list
     let filters = { categories: new Set(), sort: 'none', search: '' };
 
+    // infinite scroll config
+    const BATCH = 12;
+    let renderedCount = 0;
+    let loading = false;
+
+    // Parse CSV (robust)
     function parseCSV(text) {
       text = text.replace(/^\uFEFF/, '').trim();
       const rows = []; let cur = ['']; let col = 0; let inQuotes = false;
@@ -182,40 +198,59 @@
       });
     }
 
+    // helper: parse ImageURL into array
+    function parseImagesField(field) {
+      if (!field) return [];
+      // split on comma but trim and ignore empty
+      return field.split(',').map(s => s.trim()).filter(Boolean);
+    }
+
     async function loadProducts() {
+      loading = true;
+      document.getElementById('spinner').style.display = 'flex';
+      document.getElementById('errorMsg').style.display = 'none';
       try {
-        const res = await fetch(CSV_URL);
+        const res = await fetch(CSV_URL, { cache: "no-cache" });
+        if (!res.ok) throw new Error('CSV fetch failed: ' + res.status + ' ' + res.statusText);
         const txt = await res.text();
-        allProducts = parseCSV(txt);
+        allProducts = parseCSV(txt).map(p => {
+          // normalize fields and attach images array
+          return Object.assign({}, p, { Images: parseImagesField(p.ImageURL || '') });
+        });
         initFilters();
-        renderProducts();
+        applyFiltersAndReset();
       } catch (err) {
         console.error('CSV load error', err);
-        document.getElementById('productList').innerHTML = '<div style="padding:20px; color:#c00;">Failed to load products.</div>';
+        document.getElementById('errorMsg').textContent = 'Failed to load products. ' + (err.message || '');
+        document.getElementById('errorMsg').style.display = 'block';
+      } finally {
+        loading = false;
+        document.getElementById('spinner').style.display = 'none';
       }
     }
 
     function initFilters() {
       const cats = Array.from(new Set(allProducts.map(p => (p.Category || '').trim()).filter(Boolean)));
       const container = document.getElementById('categoryFilters');
+      container.innerHTML = '';
       cats.forEach(c => {
         const id = 'cat_' + c.replace(/\s+/g, '_');
         const lbl = document.createElement('label');
-        lbl.innerHTML = `<input type="checkbox" id="${id}" value="${c}"> ${c}`;
+        lbl.innerHTML = `<input type="checkbox" id="${id}" value="${escapeHtml(c)}"> ${escapeHtml(c)}`;
         container.append(lbl);
         lbl.querySelector('input').addEventListener('change', e => {
           if (e.target.checked) filters.categories.add(e.target.value);
           else filters.categories.delete(e.target.value);
-          renderProducts();
+          applyFiltersAndReset();
         });
       });
 
       document.querySelectorAll('input[name="sort"]').forEach(r => {
-        r.addEventListener('change', e => { filters.sort = e.target.value; renderProducts(); });
+        r.addEventListener('change', e => { filters.sort = e.target.value; applyFiltersAndReset(); });
       });
 
       document.getElementById('searchInput').addEventListener('input', e => {
-        filters.search = e.target.value.trim().toLowerCase(); renderProducts();
+        filters.search = e.target.value.trim().toLowerCase(); applyFiltersAndReset();
       });
 
       document.getElementById('clearFilters').addEventListener('click', () => {
@@ -223,97 +258,164 @@
         document.getElementById('searchInput').value = '';
         document.querySelectorAll('#categoryFilters input[type=checkbox]').forEach(cb => cb.checked = false);
         document.querySelector('input[name="sort"][value="none"]').checked = true;
-        renderProducts();
+        applyFiltersAndReset();
       });
     }
 
-    function renderProducts() {
-      const listEl = document.getElementById('productList');
-      listEl.innerHTML = '';
-
-      let items = allProducts.filter(p => {
+    function applyFiltersAndReset() {
+      // create visible list
+      visible = allProducts.filter(p => {
         if (filters.categories.size > 0 && !filters.categories.has((p.Category || '').trim())) return false;
         if (filters.search) {
-          const hay = (p.ProductName + ' ' + (p.Details || '')).toLowerCase();
+          const hay = ((p.ProductName || '') + ' ' + (p.Details || '')).toLowerCase();
           if (!hay.includes(filters.search)) return false;
         }
         return true;
       });
 
+      // sort
       if (filters.sort === 'price-asc' || filters.sort === 'price-desc') {
-        items.sort((a,b) => {
+        visible.sort((a,b) => {
           const pa = parseFloat(a.SellingPrice1pc) || 0;
           const pb = parseFloat(b.SellingPrice1pc) || 0;
           return filters.sort === 'price-asc' ? pa - pb : pb - pa;
         });
       } else if (filters.sort === 'discount-desc') {
-        items.sort((a,b) => {
+        visible.sort((a,b) => {
           const da = parseFloat(a.Discount1pcPercent) || 0;
           const db = parseFloat(b.Discount1pcPercent) || 0;
           return db - da;
         });
       }
 
-      if (items.length === 0) {
-        listEl.innerHTML = '<div style="padding:20px; color:#666;">No products found</div>';
+      // reset rendered counter and container
+      renderedCount = 0;
+      const listEl = document.getElementById('productList');
+      listEl.innerHTML = '';
+      // render first batch
+      renderNextBatch();
+    }
+
+    function renderNextBatch() {
+      if (loading) return;
+      const listEl = document.getElementById('productList');
+      const batch = visible.slice(renderedCount, renderedCount + BATCH);
+      if (batch.length === 0) {
+        // nothing more
+        if (renderedCount === 0) {
+          listEl.innerHTML = '<div style="padding:20px; color:#666;">No products found</div>';
+        }
         return;
       }
-
-      items.forEach(p => {
+      batch.forEach(p => {
         const name = (p.ProductName||'').trim();
-        const img = (p.ImageURL||'').trim();
+        const imgs = p.Images || [];
+        const img = imgs.length ? imgs[0] : 'images/placeholder.png';
         const sp1 = (p.SellingPrice1pc||'').trim();
         const sp5 = (p.SellingPrice5pc||'').trim();
-        if (!name && !img && !sp1 && !sp5) return;  // skip blank / invalid row
+        if (!name && !img && !sp1 && !sp5) return;
 
         const mrp = p.MRP ? '₹' + parseFloat(p.MRP).toFixed(2) : '';
         const sp1val = sp1 ? '₹' + parseFloat(sp1).toFixed(2) : '';
         const sp5val = sp5 ? '₹' + parseFloat(sp5).toFixed(2) : '';
         const d1 = p.Discount1pcPercent ? p.Discount1pcPercent + '% off' : '';
-        const d5 = p.Discount5pcPercent ? p.Discount5pcPercent + '% off' : '';
         const inStock = p.Stock && parseInt(p.Stock) > 0;
 
         const card = document.createElement('div');
         card.className = 'product-card';
-        const badge = !inStock ? `<div class="out-of-stock-overlay">Out of Stock</div>` : '';
         card.innerHTML = `
-          ${badge}
-          <img src="${img || 'images/placeholder.png'}" alt="${p.ProductName}" onerror="this.src='images/placeholder.png'">
+          ${!inStock ? `<div class="out-of-stock-overlay">Out of Stock</div>` : ''}
+          <img src="${escapeAttr(img)}" alt="${escapeAttr(name)}" onerror="this.src='images/placeholder.png'">
           <div class="p-body">
-            <h4 class="p-title">${p.ProductName || ''}</h4>
-            <div class="p-cat">${p.Category || ''}</div>
-            <div class="p-details">${p.Details || ''}</div>
+            <div class="p-title">
+              <span>${escapeHtml(name)}</span>
+              <span class="heart" data-name="${escapeAttr(name)}" title="Add to wishlist">♡</span>
+            </div>
+            <div class="p-cat">${escapeHtml(p.Category || '')}</div>
+            <div class="p-details">${escapeHtml(p.Details || '')}</div>
             <div class="prices">
               ${ mrp ? `<div class="mrp">${mrp}</div>` : '' }
               ${ sp1val ? `<div class="sp">1 pc: ${sp1val}</div>` : '' }
               ${ d1 ? `<div class="discount">${d1}</div>` : '' }
               ${ sp5val ? `<div class="sp">5 pc: ${sp5val}</div>` : '' }
-              ${ d5 ? `<div class="discount">${d5}</div>` : '' }
             </div>
-            <button class="btn-buy" onclick="buyWhatsApp('${encodeURIComponent(p.ProductName)}')">Buy via WhatsApp</button>
+            <div style="display:flex; gap:8px; margin-top:8px;">
+              <button class="btn-buy">Buy via WhatsApp</button>
+              <button class="btn-details">Details</button>
+            </div>
           </div>
         `;
+        // hooks
+        card.querySelector('.btn-buy').addEventListener('click', () => buyWhatsApp(name));
+        card.querySelector('.btn-details').addEventListener('click', () => openModal(p));
+        const heart = card.querySelector('.heart');
+        heart.addEventListener('click', () => toggleWishlist(p, heart));
+        // set heart state from localStorage
+        if (isWishlisted(p)) heart.classList.add('faved');
+
         listEl.appendChild(card);
       });
+
+      renderedCount += batch.length;
     }
 
-    function buyWhatsApp(prod) {
-      const product = decodeURIComponent(prod);
-      const pincode = (document.getElementById('pincodeInput')||{value:''}).value.trim();
-      const msg = `Hi, I want to buy *${product}*.\nPincode: ${pincode || '-'}\nName:\nAddress:`;
-      window.open(`https://wa.me/918149520594?text=${encodeURIComponent(msg)}`, '_blank');
+    // IntersectionObserver for infinite scroll
+    const sentinel = document.getElementById('sentinel');
+    const io = new IntersectionObserver((entries) => {
+      if (entries[0].isIntersecting) {
+        renderNextBatch();
+      }
+    }, { rootMargin: '300px' });
+    io.observe(sentinel);
+
+    // Wishlist helpers (using product name as key; change if you have stable IDs)
+    function wishlistKey() { return 'bb_wishlist_v1'; }
+    function getWishlist() {
+      try { return JSON.parse(localStorage.getItem(wishlistKey()) || '[]'); } catch(e){ return []; }
+    }
+    function isWishlisted(p) {
+      const list = getWishlist(); return list.includes((p.ProductName||'').trim());
+    }
+    function toggleWishlist(p, el) {
+      const name = (p.ProductName||'').trim();
+      let list = getWishlist();
+      if (list.includes(name)) {
+        list = list.filter(x=>x!==name);
+        el.classList.remove('faved');
+      } else {
+        list.push(name);
+        el.classList.add('faved');
+      }
+      localStorage.setItem(wishlistKey(), JSON.stringify(list));
+      // small feedback
+      el.animate([{ transform:'scale(1.0)'},{ transform:'scale(1.15)'},{ transform:'scale(1.0)'}], { duration:240 });
     }
 
-    document.querySelector('.filter-toggle').addEventListener('click', ()=> {
-      document.getElementById('filterPanel').classList.toggle('open');
-      document.getElementById('overlay').classList.toggle('show');
-    });
-    document.getElementById('overlay').addEventListener('click', ()=> {
-      document.getElementById('filterPanel').classList.remove('open');
-      document.getElementById('overlay').classList.remove('show');
-    });
+    // Modal UI
+    function openModal(p) {
+      const modal = document.getElementById('modal');
+      const content = document.getElementById('modalContent');
+      const imgs = p.Images && p.Images.length ? p.Images : ['images/placeholder.png'];
+      content.innerHTML = `
+        <h2>${escapeHtml(p.ProductName || '')}</h2>
+        <div class="modal-gallery">
+          ${imgs.map(src => `<img src="${escapeAttr(src)}" onerror="this.src='images/placeholder.png'">`).join('')}
+        </div>
+        <p style="margin-top:12px;"><strong>Category:</strong> ${escapeHtml(p.Category || '')}</p>
+        <p><strong>Details:</strong> ${escapeHtml(p.Details || '')}</p>
+        <p style="margin-top:6px;"><strong>Price:</strong> ${p.SellingPrice1pc ? '₹'+parseFloat(p.SellingPrice1pc).toFixed(2) : '—'}</p>
+        <div style="margin-top:10px;">
+          <button class="btn-buy">Buy via WhatsApp</button>
+        </div>
+      `;
+      // bind buy button
+      content.querySelector('.btn-buy').addEventListener('click', () => buyWhatsApp(p.ProductName || ''));
+      modal.classList.add('show'); modal.setAttribute('aria-hidden','false');
+    }
+    function closeModal() {
+      const modal = document.getElementById('modal');
+      modal.classList.remove('show'); modal.setAttribute('aria-hidden','true');
+    }
 
-    loadProducts();
-  </script>
-</body>
-</html>
+    function buyWhatsApp(product) {
+      const pname = (p

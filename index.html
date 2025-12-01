@@ -228,9 +228,11 @@ function renderProducts(){
     return (filters.categories.size===0 || filters.categories.has(p.category)) &&
            (p.Name.toLowerCase().includes(filters.search.toLowerCase()));
   });
+
   filtered.forEach(p=>{
     const card = document.createElement('div');
     card.className='product-card';
+
     card.innerHTML = `
       <div class="imgwrap">
         <img src="${p.images[0]}" alt="${p.Name}">
@@ -240,25 +242,42 @@ function renderProducts(){
         <div class="p-cat">${p.category}</div>
         <div class="p-details">${p.Description}</div>
         <div class="prices">
-          <span class="mrp">₹${p.mrp}</span>
-          <span class="sp">SP: ₹${p.price1pc}</span>
-          ${p.discount1pc ? `<span class="discount">${p.discount1pc}</span>` : ''}
+          <div>MRP: <span class="mrp">₹${p.mrp}</span> SP: <span class="sp">₹${p.price1pc}</span> ${p.discount1pc>0?`<span class="discount">${p.discount1pc}% off</span>`:''}</div>
         </div>
-
         <div class="stock-info">Stock: ${p.stock}</div>
       </div>
       ${p.stock<=0?'<div class="out-of-stock-overlay">Out of stock</div>':''}
-      <div class="card-actions"><button class="btn-buy">Buy</button></div>
+      <div class="card-actions">
+        <button class="btn-buy" onclick="buyViaWhatsApp('${encodeURIComponent(p.Name)}','${p.mrp}','${p.price1pc}','${p.discount1pc}')">
+          Buy via WhatsApp
+        </button>
+      </div>
     `;
     container.appendChild(card);
   });
-  document.getElementById('spinner').style.display='none';
-}
 
-document.getElementById('searchInput').addEventListener('input',(e)=>{
+  document.getElementById('searchInput').addEventListener('input', (e) => {
   filters.search = e.target.value;
   renderProducts();
 });
+
+  document.getElementById('spinner').style.display='none';
+}
+
+function buyViaWhatsApp(productName, mrp, sp, discount) {
+  const whatsappNumber = '918149520594'; // replace with your number with country code
+  const message = `Hello! I want to order the following product:%0A
+Product Name: ${decodeURIComponent(productName)}%0A
+MRP: ₹${mrp}%0A
+SP: ₹${sp}%0A
+Discount: ${discount}%25%0A
+Name: (Please enter your name)%0A
+Address: (Please enter your address)`;
+
+  const url = `https://wa.me/${whatsappNumber}?text=${message}`;
+  window.open(url, '_blank');
+}
+  
 
 // Slider rotation
 const sliderMessages = ["Limited time offer: Up to 40% off", "Clean, cruelty-free formulas"];

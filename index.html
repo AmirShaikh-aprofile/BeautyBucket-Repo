@@ -126,17 +126,42 @@ function updatePincodeMessage(){
 }
 document.getElementById('pincodeInput').addEventListener('input', updatePincodeMessage);
 
-function parseCSV(csv){
+function parseCSV(csv) {
   const lines = csv.trim().split(/\r?\n/);
-  const headers = lines.shift().split(',').map(h=>h.trim());
-  return lines.map(line=>{
-    const values = line.split(',').map(v=>v.trim());
+  const headers = lines.shift().split(',').map(h => h.trim());
+
+  return lines.map(line => {
+    const values = [];
+    let inQuotes = false;
+    let value = '';
+
+    for (let i = 0; i < line.length; i++) {
+      const char = line[i];
+      if (char === '"') {
+        inQuotes = !inQuotes;
+      } else if (char === ',' && !inQuotes) {
+        values.push(value.trim());
+        value = '';
+      } else {
+        value += char;
+      }
+    }
+    values.push(value.trim());
+
+    // remove surrounding quotes if any and unescape double quotes
+    for (let i = 0; i < values.length; i++) {
+      let v = values[i];
+      if (v.startsWith('"') && v.endsWith('"')) {
+        v = v.slice(1, -1).replace(/""/g, '"');
+      }
+      values[i] = v;
+    }
+
     const obj = {};
-    headers.forEach((h,i)=>obj[h]=values[i]||'');
+    headers.forEach((h, i) => obj[h] = values[i] || '');
     return obj;
   });
 }
-
 function fetchProducts(){
   document.getElementById('spinner').style.display='flex';
   fetch(CSV_URL)

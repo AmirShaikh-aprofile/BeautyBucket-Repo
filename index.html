@@ -67,14 +67,14 @@ a,button{font-family:inherit;cursor:pointer}
         <div class="sub">Quality Cosmetics. Quick Delivery.</div>
       </div>
       <div class="controls">
-        <button id="themeToggle" class="dark-toggle" title="Toggle dark mode">🌓</button>
+        <button id="themeToggle" class="dark-toggle" title="Toggle dark mode"></button>
       </div>
     </div>
   </div>
 </header>
 
 <div class="container">
-  <div class="slider" id="sliderMessage">Limited time offer: Up to 20% off</div>
+  <div class="slider" id="sliderMessage">Limited time offer: Up to 40% off</div>
   
   <div class="top-bar">
     <div style="flex:1;display:flex;gap:8px;align-items:center">
@@ -224,7 +224,7 @@ document.getElementById('searchInput').addEventListener('input',(e)=>{
 });
 
 // Slider rotation
-const sliderMessages = ["Limited time offer: Up to 20% off", "Clean, cruelty-free formulas"];
+const sliderMessages = ["Limited time offer: Up to 40% off", "Clean, cruelty-free formulas"];
 let currentSlide = 0;
 setInterval(()=>{
   currentSlide = (currentSlide+1)%sliderMessages.length;

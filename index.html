@@ -21,14 +21,40 @@ a,button{font-family:inherit;cursor:pointer}
 .site-header .row{display:flex;align-items:center;gap:12px;justify-content:space-between}
 /* Prevent header from stretching when logo height increases */
 .site-header {
-  height: 100px;       /* adjust if needed */
-  overflow: hidden;
+  height: 100px;                /* keep fixed for desktop */
+  overflow: hidden;             /* prevent overflow */
+  display: flex;                /* enable flex layout */
+  justify-content: space-between;
+  align-items: flex-start;      /* align logo to top */
+  padding: 8px 16px;            /* optional top/bottom padding */
+  background: linear-gradient(90deg, var(--accent1), var(--accent2));
+  border-radius: 10px;
 }
 
+
 .site-header img {
-  max-height: auto;   /* same as above */
+  height: 80px;       /* desktop logo height */
   width: auto;
+  display: block;
+  margin-top: 0;      /* remove extra spacing */
 }
+
+/* Responsive header & logo for mobile */
+@media (max-width: 799px) {
+  .site-header {
+    height: 70px;        /* reduce header height on mobile */
+    padding: 6px 12px;   /* less padding for compact look */
+  }
+
+  .site-header img {
+    height: 50px;        /* smaller logo on mobile */
+  }
+
+  .controls {
+    align-items: flex-start; /* keep toggle aligned with logo top */
+  }
+}
+
 
 .brand{font-weight:700;font-size:20px}
 .sub{font-size:13px;opacity:0.95;margin-top:4px}
@@ -75,7 +101,7 @@ a,button{font-family:inherit;cursor:pointer}
     <div class="row">
 
       <div style="display:flex;align-items:center;gap:12px;">
-        <img src="https://raw.githubusercontent.com/AmirShaikh-aprofile/BeautyBucket-Repo/main/BeautyBucket-Logo-New.png" alt="BeautyBucket Logo" style="height:100px; width:auto;">
+        <img src="https://raw.githubusercontent.com/AmirShaikh-aprofile/BeautyBucket-Repo/main/BeautyBucket-Logo-New.png" alt="BeautyBucket Logo">
       </div>
 
       <div class="controls">

@@ -19,6 +19,17 @@ a,button{font-family:inherit;cursor:pointer}
 .container{max-width:1100px;margin:0 auto;padding:16px}
 .site-header{background:linear-gradient(90deg,var(--accent1),var(--accent2));color:#fff;padding:16px;border-radius:10px}
 .site-header .row{display:flex;align-items:center;gap:12px;justify-content:space-between}
+/* Prevent header from stretching when logo height increases */
+.site-header {
+  height: 150px;       /* adjust if needed */
+  overflow: hidden;
+}
+
+.site-header img {
+  max-height: 150px;   /* same as above */
+  width: auto;
+}
+
 .brand{font-weight:700;font-size:20px}
 .sub{font-size:13px;opacity:0.95;margin-top:4px}
 .controls{display:flex;gap:8px;align-items:center}

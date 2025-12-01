@@ -231,11 +231,9 @@ function renderProducts(){
   filtered.forEach(p=>{
     const card = document.createElement('div');
     card.className='product-card';
-    const watermarkText = "Clean, cruelty-free formulas"; // Watermark message
     card.innerHTML = `
       <div class="imgwrap">
         <img src="${p.images[0]}" alt="${p.Name}">
-        <div class="watermark">${watermarkText}</div>
       </div>
       <div class="p-body">
         <div class="p-title">${p.Name}</div>

@@ -17,7 +17,37 @@ html,body{height:100%}
 body{font-family:Inter,system-ui,Arial,sans-serif;background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased}
 a,button{font-family:inherit;cursor:pointer}
 .container{max-width:1100px;margin:0 auto;padding:16px}
-  
+
+.prices {
+  margin-top: auto;
+  font-size: 16px;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.mrp {
+  text-decoration: line-through;
+  color: #888;
+  font-size: 14px;
+}
+
+.sp {
+  font-weight: 700;
+  font-size: 20px;
+  color: #ff3b30; /* bright red to grab attention */
+}
+
+.discount {
+  font-size: 14px;
+  font-weight: 700;
+  color: #25D366; /* green for “good deal” */
+  background: rgba(37, 211, 102, 0.1);
+  padding: 2px 6px;
+  border-radius: 6px;
+}
+
 .logo {
   display: block;
   margin: 20px auto; /* center */
@@ -246,8 +276,11 @@ function renderProducts(){
         <div class="p-cat">${p.category}</div>
         <div class="p-details">${p.Description}</div>
         <div class="prices">
-          <div>MRP: <span class="mrp">₹${p.mrp}</span> SP: <span class="sp">₹${p.price1pc}</span> ${p.discount1pc>0?`<span class="discount">${p.discount1pc}% off</span>`:''}</div>
+          <span class="mrp">₹${p.mrp}</span>
+          <span class="sp">₹${p.price1pc}</span>
+          ${p.discount1pc>0?`<span class="discount">${p.discount1pc}% OFF</span>`:''}
         </div>
+
       </div>
       ${p.stock<=0?'<div class="out-of-stock-overlay">Out of stock</div>':''}
       <div class="card-actions">

@@ -120,9 +120,12 @@ const PORTAR_PINCODES = ['411004','411040','410506','410509','413132','411032','
 function updatePincodeMessage(){
   const val = document.getElementById('pincodeInput').value.trim();
   const msgEl = document.getElementById('pincodeMessage');
-  if(FREE_PINCODES.includes(val)) msgEl.innerHTML = '<b>Free Instant Delivery For You</b>';
-  else if(PORTAR_PINCODES.includes(val)) msgEl.textContent = '<b>Instant Delivery with Portar, Charges applied</b>';
-  else msgEl.textContent = '<b>Delivery charges is Applicable</b>';
+  if(FREE_PINCODES.includes(val)) 
+    msgEl.innerHTML = '<b>Free Instant Delivery For You</b>';
+  else if(PORTAR_PINCODES.includes(val)) 
+    msgEl.innerHTML = '<b>Instant Delivery with Portar, Charges applied</b>';
+  else 
+    msgEl.innerHTML = '<b>Delivery charges is Applicable</b>';
 }
 document.getElementById('pincodeInput').addEventListener('input', updatePincodeMessage);
 

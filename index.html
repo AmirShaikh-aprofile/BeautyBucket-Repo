@@ -149,10 +149,8 @@ function fetchProducts(){
         p.category = p.Category || 'Uncategorized';
         p.stock = parseInt(p.Stock||0);
         p.price1pc = parseFloat(p.SellingPrice1pc||0);
-        p.price5pc = parseFloat(p.SellingPrice5pc||0);
         p.mrp = parseFloat(p.MRP||p.price1pc);
-        p.discount1pc = Math.round(((p.mrp-p.price1pc)/p.mrp)*100);
-        p.discount5pc = Math.round(((p.mrp-p.price5pc)/p.mrp)*100);
+        p.discount1pc = p.Discount1pcPercent || '';
         p.images = p.ImageURL ? p.ImageURL.split('|') : [PLACEHOLDER];
       });
       renderCategoryFilters();
@@ -218,9 +216,11 @@ function renderProducts(){
         <div class="p-cat">${p.category}</div>
         <div class="p-details">${p.Description}</div>
         <div class="prices">
-          <div>1 pc: <span class="sp">₹${p.price1pc}</span> ${p.discount1pc>0?`<span class="discount">${p.discount1pc}% off</span>`:''}</div>
-          <div>5 pc: <span class="sp">₹${p.price5pc}</span> ${p.discount5pc>0?`<span class="discount">${p.discount5pc}% off</span>`:''}</div>
+          <span class="mrp">₹${p.mrp}</span>
+          <span class="sp">SP: ₹${p.price1pc}</span>
+          ${p.discount1pc ? `<span class="discount">${p.discount1pc}</span>` : ''}
         </div>
+
         <div class="stock-info">Stock: ${p.stock}</div>
       </div>
       ${p.stock<=0?'<div class="out-of-stock-overlay">Out of stock</div>':''}

@@ -130,8 +130,8 @@ function parseCSV(csv){
   const lines = csv.trim().split(/\r?\n/);
   const headers = lines.shift().split(',').map(h=>h.trim());
   return lines.map(line=>{
-    const values = line.split(',').map(v=>v.trim());
-    const obj = {};
+    const values = line.match(/(".*?"|[^",]+)(?=\s*,|\s*$)/g)
+               .map(v => v.replace(/^"|"$/g,"").trim());
     headers.forEach((h,i)=>obj[h]=values[i]||'');
     return obj;
   });
@@ -149,7 +149,8 @@ function fetchProducts(){
         p.category = p.Category || 'Uncategorized';
         p.stock = parseInt(p.Stock||0);
         p.price1pc = parseFloat(p.SellingPrice1pc||0);
-        p.mrp = parseFloat(p.MRP||p.price1pc);
+        p.mrp = parseFloat(p.MRP);
+        if (isNaN(p.mrp)) p.mrp = p.price1pc;
         p.discount1pc = p.Discount1pcPercent || '';
         p.images = p.ImageURL ? p.ImageURL.split('|') : [PLACEHOLDER];
       });

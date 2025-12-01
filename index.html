@@ -273,7 +273,6 @@ function renderProducts(){
         <div class="prices">
           <div>MRP: <span class="mrp">₹${p.mrp}</span> SP: <span class="sp">₹${p.price1pc}</span> ${p.discount1pc>0?`<span class="discount">${p.discount1pc}% off</span>`:''}</div>
         </div>
-        <div class="stock-info">Stock: ${p.stock}</div>
       </div>
       ${p.stock<=0?'<div class="out-of-stock-overlay">Out of stock</div>':''}
       <div class="card-actions">

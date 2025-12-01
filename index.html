@@ -1,237 +1,332 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>BeautyBucket — Shop Cosmetics</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BeautyBucket — Quality Cosmetics</title>
+
 <style>
-:root{
-  --bg:#f6f6f8; --card:#fff; --text:#111; --muted:#666;
-  --accent1:#ff5aa8; --accent2:#ff7ab0; --success:#25D366; --glass: rgba(255,255,255,0.6);
+/* ======================== GENERAL RESET ======================== */
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #fafafa;
+  color: #333;
 }
-[data-theme="dark"]{
-  --bg:#0b0d10; --card:#0f1114; --text:#e6e7ea; --muted:#9aa0a6; --glass: rgba(255,255,255,0.03);
+
+header {
+  background: #fff;
+  padding: 15px 25px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #eee;
 }
-*{box-sizing:border-box;margin:0;padding:0}
-html,body{height:100%}
-body{font-family:Inter,system-ui,Arial,sans-serif;background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased}
-a,button{font-family:inherit;cursor:pointer}
-.container{max-width:1100px;margin:0 auto;padding:16px}
-.site-header{background:linear-gradient(90deg,var(--accent1),var(--accent2));color:#fff;padding:16px;border-radius:10px}
-.site-header .row{display:flex;align-items:center;gap:12px;justify-content:space-between}
-.brand{font-weight:700;font-size:20px}
-.sub{font-size:13px;opacity:0.95;margin-top:4px}
-.controls{display:flex;gap:8px;align-items:center}
-.dark-toggle{padding:8px;border-radius:10px;background:transparent;color:#fff;border:1px solid rgba(255,255,255,0.12)}
-.top-bar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:8px 0 12px}
-#searchInput{flex:1 1 220px;padding:10px;border-radius:10px;border:1px solid rgba(0,0,0,0.06);background:#fff}
-#pincodeInput{width:130px;padding:8px;border-radius:10px;border:1px solid rgba(0,0,0,0.06);background:#fff}
-#pincodeMessage{width:100%;font-size:13px;color:var(--muted);margin-top:6px}
-.filters-row{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}
-.cat-btn{padding:8px 12px;border-radius:999px;border:1px solid rgba(0,0,0,0.06);background:transparent;color:var(--text);cursor:pointer;box-shadow:0 6px 20px rgba(16,24,40,0.03)}
-.cat-btn.active{background:linear-gradient(90deg,var(--accent1),var(--accent2));color:#fff;transform:translateY(-3px);box-shadow:0 18px 40px rgba(255,90,168,0.12)}
-#clearFilters{padding:8px 12px;border-radius:999px;background:#333;color:#fff;cursor:pointer;display:none;box-shadow:0 6px 20px rgba(16,24,40,0.03)}
-.products{display:grid;grid-template-columns:1fr;gap:18px;margin-bottom:40px}
-@media(min-width:800px){.products{grid-template-columns:repeat(2,1fr)}}
-@media(min-width:1200px){.products{grid-template-columns:repeat(3,1fr)}}
-.product-card{background:var(--card);border-radius:14px;padding:12px;border:1px solid rgba(16,24,40,0.04);display:flex;flex-direction:column;min-height:300px;box-shadow:0 8px 28px rgba(16,24,40,0.04);transition:transform .18s,box-shadow .18s;position:relative}
-.imgwrap{height:160px;border-radius:10px;background:linear-gradient(180deg,#fff,#fcfcfd);display:flex;align-items:center;justify-content:center;overflow:hidden;position:relative}
-.imgwrap img{max-width:100%;max-height:100%;object-fit:contain;display:block;opacity:0.9}
-.watermark{position:absolute;bottom:8px;left:8px;background:rgba(255,255,255,0.6);padding:4px 8px;border-radius:6px;font-size:12px;font-weight:600;color:#111}
-.p-body{padding:12px 6px 6px;display:flex;flex-direction:column;gap:6px;flex:1}
-.p-title{font-weight:600;font-size:16px;display:flex;align-items:center;gap:8px}
-.p-cat{color:var(--muted);font-size:13px}
-.p-details{color:var(--muted);font-size:13px;min-height:36px}
-.prices{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:auto;font-size:14px}
-.mrp{color:#9aa0a6;text-decoration:line-through}
-.sp{font-weight:700;font-size:15px}
-.discount{color:#d10000;font-size:13px}
-.stock-info{font-size:13px;color:#888}
-.card-actions{display:flex;gap:8px;align-items:center;margin-top:10px}
-.btn-buy{background:var(--success);color:#fff;padding:6px 12px;border-radius:10px;border:0;font-weight:700;cursor:pointer}
-.out-of-stock-overlay{position:absolute;left:12px;top:12px;background:rgba(255,0,0,0.9);color:#fff;padding:6px 8px;border-radius:8px;font-weight:700;z-index:10}
-.spinner-wrap{display:flex;align-items:center;justify-content:center;padding:30px}
-.spinner{width:44px;height:44px;border-radius:50%;border:5px solid rgba(0,0,0,0.07);border-top-color:var(--accent1);animation:spin 1s linear infinite}
-@keyframes spin{to{transform:rotate(360deg)}}
-#errorMsg{color:#c00;padding:20px}
-.muted{color:var(--muted);font-size:13px}
-.slider{position:relative;overflow:hidden;border-radius:10px;margin-bottom:16px;background:linear-gradient(90deg,var(--accent1),var(--accent2));color:#fff;padding:16px;font-weight:600;font-size:14px;text-align:center}
+
+.logo {
+  font-size: 22px;
+  font-weight: bold;
+  color: #d63384;
+}
+
+/* ======================== SLIDER SECTION ======================== */
+.slider-container {
+  width: 100%;
+  height: 300px;
+  position: relative;
+  overflow: hidden;
+  border-radius: 15px;
+  margin: 20px auto;
+}
+
+.slider-background {
+  background: url('https://i.imgur.com/7XVZaVg.jpeg') center/cover no-repeat;
+  width: 100%;
+  height: 100%;
+  filter: brightness(0.92);
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.slider {
+  display: flex;
+  width: 300%;
+  height: 100%;
+  animation: slide 12s infinite;
+}
+
+.slide {
+  width: 100%;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.slide h2 {
+  font-size: 32px;
+  color: #3a1f1f;
+  font-weight: 700;
+  text-shadow: 0px 2px 5px rgba(255, 255, 255, 0.8);
+  text-align: center;
+  padding: 10px 20px;
+}
+
+@keyframes slide {
+  0% { transform: translateX(0%); }
+  30% { transform: translateX(0%); }
+
+  33% { transform: translateX(-100%); }
+  63% { transform: translateX(-100%); }
+
+  66% { transform: translateX(-200%); }
+  96% { transform: translateX(-200%); }
+
+  100% { transform: translateX(0%); }
+}
+
+/* ======================== FILTERS SECTION ======================== */
+.filters {
+  padding: 15px;
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+select, input {
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+}
+
+/* ======================== PRODUCTS GRID ======================== */
+.products {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 18px;
+  padding: 15px;
+}
+
+.product-card {
+  background: #fff;
+  padding: 12px;
+  border-radius: 12px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+  text-align: center;
+}
+
+.product-card img {
+  width: 100%;
+  height: 160px;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+.product-name {
+  font-size: 16px;
+  font-weight: bold;
+  margin-top: 8px;
+}
+
+.price-box {
+  margin-top: 6px;
+  font-size: 14px;
+}
+
+.old-price {
+  text-decoration: line-through;
+  color: #777;
+}
+
+.new-price {
+  font-size: 16px;
+  font-weight: bold;
+  color: #d63384;
+}
+
+/* ======================== PINCODE BOX ======================== */
+#pincodeMessage {
+  margin-top: 10px;
+  font-weight: bold;
+  color: #d63384;
+}
+
 </style>
 </head>
+
 <body>
-<header class="site-header">
-  <div class="container">
-    <div class="row">
-      <div>
-        <div class="brand">BeautyBucket</div>
-        <div class="sub">Quality Cosmetics. Quick Delivery.</div>
-      </div>
-      <div class="controls">
-        <button id="themeToggle" class="dark-toggle" title="Toggle dark mode">🌓</button>
-      </div>
-    </div>
-  </div>
+
+<header>
+  <div class="logo">BeautyBucket • Quick Delivery</div>
 </header>
 
-<div class="container">
-  <div class="slider" id="sliderMessage">Limited time offer: Up to 20% off</div>
-  
-  <div class="top-bar">
-    <div style="flex:1;display:flex;gap:8px;align-items:center">
-      <input id="searchInput" placeholder="Search products..." aria-label="Search products">
-      <input id="pincodeInput" placeholder="Pincode" aria-label="Pincode">
+<!-- ======================== SLIDER ======================== -->
+<div class="slider-container">
+  <div class="slider-background"></div>
+
+  <div class="slider">
+    <div class="slide">
+      <h2>Fresh arrivals — curated just for you</h2>
     </div>
-    <div style="display:flex;align-items:center;gap:8px">
-      <div id="pincodeMessage" class="muted">Enter the Pincode to check delivery options</div>
+
+    <div class="slide">
+      <h2>Limited time offer: Up to 40% off</h2>
+    </div>
+
+    <div class="slide">
+      <h2>Clean, cruelty-free formulas</h2>
     </div>
   </div>
-
-  <div class="filters-row" id="categoryFilters"></div>
-  <div id="clearFilters">Clear filters</div>
-
-  <div id="productList" class="products" aria-live="polite"></div>
-  <div id="spinner" class="spinner-wrap" style="display:none"><div class="spinner"></div></div>
-  <div id="errorMsg" style="display:none"></div>
 </div>
 
+
+<!-- ======================== FILTERS ======================== -->
+<div class="filters">
+  <select id="categoryFilter">
+    <option value="">All Categories</option>
+  </select>
+
+  <select id="sortFilter">
+    <option value="">Sort By</option>
+    <option value="low-high">Price: Low → High</option>
+    <option value="high-low">Price: High → Low</option>
+    <option value="discount">Discount: Low → High</option>
+  </select>
+
+  <div>
+    <input type="number" id="pincodeInput" placeholder="Enter pincode">
+    <div id="pincodeMessage"></div>
+  </div>
+</div>
+
+
+<!-- ======================== PRODUCTS GRID ======================== -->
+<div id="productList" class="products"></div>
+
+
 <script>
-const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQA2pIOTPv2AVnMSWtlKLJeSXQXxTllgHn2gGYcdd_ZbHARLmclz_OXy009Aw9hJqgpc-RXIk_HXkK4/pub?gid=1550466309&single=true&output=csv";
-const PLACEHOLDER = "https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?w=900&q=80&auto=format&fit=crop";
-let allProducts = [];
-const filters = { categories: new Set(), search: '' };
+/* ======================== PINCODE LOGIC ======================== */
+const freePincodes = ["411028","411060","412308","412307","411036","411013"];
 
-// Pincode lists
-const FREE_PINCODES = ['411028','411060','412308','412307','411036','411013'];
-const PORTAR_PINCODES = ['411004','411040','410506','410509','413132','411032','411035','412411','412205','412201','412105','412211','412206','410507','411042','410401','411046','410501','410505','412218','411003','412408','411051','412410','410502','413114','412212','411021','412401','412207','412404','411007','411027','412406','412402','412405','412204','411002','411045','413102','413133','413103','413801','412108','413104','412303','412203','412209','413130','413105','412301','411026','411039','412106','411038','410513','411037','413106','412202','412208','411001','411031','410503','412114','412409','411019','412101','411005','412213','411012','412305','412311','412109','412214','413110','410508','412403','411043','411015','411041','411014','412216','410516','413120','411016','412210','412102','412104','411028','411013','410504','412306','411025','411057','410402','412215','412107','410403','411017','410405','412412','412219','412220','411052','411034','411011','411024','413116','410301','411048','412103','411023','410511','413802','410512','411047','411030','410510','410515','413115','412307','411018','412304','411036','411008','411044','411009','410406','412308','410302','411020','411022','412110','412312','411058','411006','411060'];
+const portarPincodes = [
+"411004","411040","410506","410509","413132","411032","411035","412411","412205","412201","412105","412211",
+"412206","410507","411042","410401","411046","410501","410505","412218","411003","412408","411051","412410",
+"410502","413114","412212","411021","412401","412207","412404","411007","411027","412406","412402","412405",
+"412204","411002","411045","413102","413133","413103","413801","412108","413104","412303","412203","412209",
+"413130","413105","412301","411026","411039","412106","411038","410513","411037","413106","412202","412208",
+"411001","411031","410503","412114","412409","411019","412101","411005","412213","411012","412305","412311",
+"412109","412214","413110","410508","412403","411043","411015","411041","411014","412216","410516","413120",
+"411016","412210","412102","412104","411028","411013","410504","412306","411025","411057","410402","412215",
+"412107","410403","411017","410405","412412","412219","412220","411052","411034","411011","411024","413116",
+"410301","411048","412103","411023","410511","413802","410512","411047","411030","410510","410515","413115",
+"412307","411018","412304","411036","411008","411044","411009","410406","412308","410302","411020","411022",
+"412110","412312","411058","411006","411060"
+];
 
-function updatePincodeMessage(){
-  const val = document.getElementById('pincodeInput').value.trim();
-  const msgEl = document.getElementById('pincodeMessage');
-  if(FREE_PINCODES.includes(val)) msgEl.innerHTML = '<b>Free Instance Delivery For You</b>';
-  else if(PORTAR_PINCODES.includes(val)) msgEl.textContent = 'Instance Delivery with Portar';
-  else msgEl.textContent = 'Delivery charges is Applicable';
-}
-document.getElementById('pincodeInput').addEventListener('input', updatePincodeMessage);
+document.getElementById("pincodeInput").addEventListener("input", function () {
+  const p = this.value.trim();
+  const msg = document.getElementById("pincodeMessage");
 
-function parseCSV(csv){
-  const lines = csv.trim().split(/\r?\n/);
-  const headers = lines.shift().split(',').map(h=>h.trim());
-  return lines.map(line=>{
-    const values = line.split(',').map(v=>v.trim());
-    const obj = {};
-    headers.forEach((h,i)=>obj[h]=values[i]||'');
-    return obj;
-  });
-}
-
-function fetchProducts(){
-  document.getElementById('spinner').style.display='flex';
-  fetch(CSV_URL)
-    .then(r=>r.text())
-    .then(text=>{
-      allProducts = parseCSV(text);
-      allProducts.forEach(p=>{
-        p.Name = p.ProductName || '';
-        p.Description = p.Details || '';
-        p.category = p.Category || 'Uncategorized';
-        p.stock = parseInt(p.Stock||0);
-        p.price1pc = parseFloat(p.SellingPrice1pc||0);
-        p.price5pc = parseFloat(p.SellingPrice5pc||0);
-        p.mrp = parseFloat(p.MRP||p.price1pc);
-        p.discount1pc = Math.round(((p.mrp-p.price1pc)/p.mrp)*100);
-        p.discount5pc = Math.round(((p.mrp-p.price5pc)/p.mrp)*100);
-        p.images = p.ImageURL ? p.ImageURL.split('|') : [PLACEHOLDER];
-      });
-      renderCategoryFilters();
-      renderProducts();
-    }).catch(e=>{
-      document.getElementById('spinner').style.display='none';
-      const msg = document.getElementById('errorMsg');
-      msg.style.display='block';
-      msg.textContent = 'Error loading products.';
-      console.error(e);
-    });
-}
-
-function renderCategoryFilters(){
-  const container = document.getElementById('categoryFilters');
-  container.innerHTML='';
-  const categories = Array.from(new Set(allProducts.map(p=>p.category)));
-  categories.forEach(cat=>{
-    const btn = document.createElement('button');
-    btn.className='cat-btn';
-    btn.textContent=cat;
-    btn.onclick=()=>{
-      if(filters.categories.has(cat)) filters.categories.delete(cat);
-      else filters.categories.add(cat);
-      updateFilterUI();
-      renderProducts();
-    };
-    container.appendChild(btn);
-  });
-}
-
-function updateFilterUI(){
-  document.querySelectorAll('.cat-btn').forEach(btn=>{
-    btn.classList.toggle('active', filters.categories.has(btn.textContent));
-  });
-  document.getElementById('clearFilters').style.display = filters.categories.size>0 ? 'inline-block':'none';
-}
-
-document.getElementById('clearFilters').onclick=()=>{
-  filters.categories.clear();
-  updateFilterUI();
-  renderProducts();
-};
-
-function renderProducts(){
-  const container = document.getElementById('productList');
-  container.innerHTML='';
-  let filtered = allProducts.filter(p=>{
-    return (filters.categories.size===0 || filters.categories.has(p.category)) &&
-           (p.Name.toLowerCase().includes(filters.search.toLowerCase()));
-  });
-  filtered.forEach(p=>{
-    const card = document.createElement('div');
-    card.className='product-card';
-    const watermarkText = "Clean, cruelty-free formulas"; // Watermark message
-    card.innerHTML = `
-      <div class="imgwrap">
-        <img src="${p.images[0]}" alt="${p.Name}">
-        <div class="watermark">${watermarkText}</div>
-      </div>
-      <div class="p-body">
-        <div class="p-title">${p.Name}</div>
-        <div class="p-cat">${p.category}</div>
-        <div class="p-details">${p.Description}</div>
-        <div class="prices">
-          <div>1 pc: <span class="sp">₹${p.price1pc}</span> ${p.discount1pc>0?`<span class="discount">${p.discount1pc}% off</span>`:''}</div>
-          <div>5 pc: <span class="sp">₹${p.price5pc}</span> ${p.discount5pc>0?`<span class="discount">${p.discount5pc}% off</span>`:''}</div>
-        </div>
-        <div class="stock-info">Stock: ${p.stock}</div>
-      </div>
-      ${p.stock<=0?'<div class="out-of-stock-overlay">Out of stock</div>':''}
-      <div class="card-actions"><button class="btn-buy">Buy</button></div>
-    `;
-    container.appendChild(card);
-  });
-  document.getElementById('spinner').style.display='none';
-}
-
-document.getElementById('searchInput').addEventListener('input',(e)=>{
-  filters.search = e.target.value;
-  renderProducts();
+  if (freePincodes.includes(p)) {
+    msg.innerHTML = "<b>Free Instant Delivery For You</b>";
+    msg.style.color = "green";
+  }
+  else if (portarPincodes.includes(p)) {
+    msg.innerHTML = "Instant Delivery with Portar";
+    msg.style.color = "#d63384";
+  }
+  else if (p.length === 6) {
+    msg.innerHTML = "Delivery charges are Applicable";
+    msg.style.color = "red";
+  }
+  else {
+    msg.textContent = "";
+  }
 });
 
-// Slider rotation
-const sliderMessages = ["Limited time offer: Up to 20% off", "Clean, cruelty-free formulas"];
-let currentSlide = 0;
-setInterval(()=>{
-  currentSlide = (currentSlide+1)%sliderMessages.length;
-  document.getElementById('sliderMessage').textContent = sliderMessages[currentSlide];
-},4000);
 
-fetchProducts();
+/* ======================== FETCH & DISPLAY PRODUCTS ======================== */
+let allProducts = [];
+
+const sheetURL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQA2pIOTPv2AVnMSWtlKLJeSXQXxTllgHn2gGYcdd_ZbHARLmclz_OXy009Aw9hJqgpc-RXIk_HXkK4/pub?gid=1550466309&single=true&output=csv";  // Replace with your public CSV URL
+
+fetch(sheetURL)
+  .then(res => res.text())
+  .then(csv => {
+    const rows = csv.split("\n").map(r => r.split(","));
+    const headers = rows[0];
+
+    const data = rows.slice(1).map(r => {
+      return {
+        ProductName: r[0],
+        Category: r[1],
+        Details: r[2],
+        MRP: parseFloat(r[3]),
+        Price: parseFloat(r[4]),
+        Stock: r[8],
+        ImageURL: r[9]
+      };
+    });
+
+    allProducts = data;
+    populateCategories();
+    displayProducts(allProducts);
+  });
+
+
+function populateCategories() {
+  const select = document.getElementById("categoryFilter");
+  const cats = [...new Set(allProducts.map(p => p.Category))];
+
+  cats.forEach(c => {
+    const op = document.createElement("option");
+    op.value = c;
+    op.textContent = c;
+    select.appendChild(op);
+  });
+}
+
+function displayProducts(list) {
+  const box = document.getElementById("productList");
+  box.innerHTML = "";
+
+  list.forEach(p => {
+    const card = document.createElement("div");
+    card.className = "product-card";
+
+    card.innerHTML = `
+      <img src="${p.ImageURL}" alt="">
+      <div class="product-name">${p.ProductName}</div>
+      <div class="price-box">
+        <span class="old-price">₹${p.MRP}</span>
+        <span class="new-price">₹${p.Price}</span>
+      </div>
+    `;
+
+    box.appendChild(card);
+  });
+}
+
+/* ======================== FILTER + SORT ======================== */
+document.getElementById("categoryFilter").addEventListener("change", applyFilters);
+document.getElementById("sortFilter").addEventListener("change", applyFilters);
+
+function applyFilters() {
+  let filtered = [...allProducts];
+
+  const cat = document.getElementById("categoryFilter").value;
+  const sort = document.getElementById("sortFilter").value;
+
+  if (cat) filtered = filtered.filter(p => p.Category === cat);
+
+  if (sort === "low-high") filtered.sort((a,b) => a.Price - b.Price);
+  if (sort === "high-low") filtered.sort((a,b) => b.Price - a.Price);
+  if (sort === "discount") filtered.sort((a,b) => (a.MRP-a.Price) - (b.MRP-b.Price));
+
+  displayProducts(filtered);
+}
 </script>
+
 </body>
 </html>

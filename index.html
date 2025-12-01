@@ -30,17 +30,17 @@ a,button{font-family:inherit;cursor:pointer}
 .mrp {
   text-decoration: line-through;
   color: #888;
-  font-size: 14px;
+  font-size: 22px;
 }
 
 .sp {
   font-weight: 700;
-  font-size: 20px;
+  font-size: 25px;
   color: #ff3b30; /* bright red to grab attention */
 }
 
 .discount {
-  font-size: 14px;
+  font-size: 18px;
   font-weight: 700;
   color: #25D366; /* green for “good deal” */
   background: rgba(37, 211, 102, 0.1);
@@ -278,7 +278,7 @@ function renderProducts(){
         <div class="prices">
           <span class="mrp">₹${p.mrp}</span>
           <span class="sp">₹${p.price1pc}</span>
-          ${p.discount1pc>0?`<span class="discount">${p.discount1pc}% OFF</span>`:''}
+          ${p.discount1pc && parseFloat(p.discount1pc) > 0 ? `<span class="discount">${p.discount1pc}% OFF</span>` : ''}
         </div>
 
       </div>

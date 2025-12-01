@@ -55,6 +55,9 @@ a,button{font-family:inherit;cursor:pointer}
   }
 }
 
+.stock-info {
+  display: none;
+}
 
 .brand{font-weight:700;font-size:20px}
 .sub{font-size:13px;opacity:0.95;margin-top:4px}
@@ -273,6 +276,7 @@ function renderProducts(){
         <div class="prices">
           <div>MRP: <span class="mrp">₹${p.mrp}</span> SP: <span class="sp">₹${p.price1pc}</span> ${p.discount1pc>0?`<span class="discount">${p.discount1pc}% off</span>`:''}</div>
         </div>
+        <div class="stock-info">Stock: ${p.stock}</div>
       </div>
       ${p.stock<=0?'<div class="out-of-stock-overlay">Out of stock</div>':''}
       <div class="card-actions">

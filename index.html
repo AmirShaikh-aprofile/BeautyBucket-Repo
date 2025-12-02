@@ -55,12 +55,19 @@ a,button{font-family:inherit;cursor:pointer}
   width: auto;
 }
 
+  .controls {
+    align-items: flex-start; /* keep toggle aligned with logo top */
+  }
+}
+
+
+.brand{font-weight:700;font-size:20px}
+.sub{font-size:13px;opacity:0.95;margin-top:4px}
 .controls{display:flex;gap:8px;align-items:center}
 .dark-toggle{padding:8px;border-radius:10px;background:transparent;color:#fff;border:1px solid rgba(255,255,255,0.12)}
 .top-bar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:8px 0 12px}
 #searchInput{flex:1 1 220px;padding:10px;border-radius:10px;border:1px solid rgba(0,0,0,0.06);background:#fff}
 #pincodeInput{width:130px;padding:8px;border-radius:10px;border:1px solid rgba(0,0,0,0.06);background:#fff}
-#sortSelect{width:180px;padding:8px;border-radius:10px;border:1px solid rgba(0,0,0,0.06);background:#fff;font-size:14px}
 #pincodeMessage{width:100%;font-size:13px;color:var(--muted);margin-top:6px}
 .filters-row{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}
 .cat-btn{padding:8px 12px;border-radius:999px;border:1px solid rgba(0,0,0,0.06);background:transparent;color:var(--text);cursor:pointer;box-shadow:0 6px 20px rgba(16,24,40,0.03)}
@@ -94,6 +101,21 @@ a,button{font-family:inherit;cursor:pointer}
 </style>
 </head>
 <body>
+<header class="site-header">
+  <div class="container">
+    <div class="row">
+
+      <div style="display:flex;align-items:center;gap:12px;">
+        <img src="https://raw.githubusercontent.com/AmirShaikh-aprofile/BeautyBucket-Repo/main/BeautyBucket-Logo-New%20(1).png" alt="BeautyBucket Logo" class="logo">
+      </div>
+
+      <div class="controls">
+        <button id="themeToggle" class="dark-toggle" title="Toggle dark mode"></button>
+      </div>
+
+    </div>
+  </div>
+</header>
 
 <div class="container">
   <div class="slider" id="sliderMessage">Limited time offer: Up to 40% off</div>
@@ -102,13 +124,6 @@ a,button{font-family:inherit;cursor:pointer}
     <div style="flex:1;display:flex;gap:8px;align-items:center">
       <input id="searchInput" placeholder="Search products..." aria-label="Search products">
       <input id="pincodeInput" placeholder="Pincode" aria-label="Pincode">
-      <select id="sortSelect" aria-label="Sort products">
-        <option value="">Sort by</option>
-        <option value="price-asc">Price: Low to High</option>
-        <option value="price-desc">Price: High to Low</option>
-        <option value="name-asc">Name: A to Z</option>
-        <option value="name-desc">Name: Z to A</option>
-      </select>
     </div>
     <div style="display:flex;align-items:center;gap:8px">
       <div id="pincodeMessage" class="muted"><b>Enter the Pincode to check delivery options</b></div>
@@ -129,6 +144,7 @@ const PLACEHOLDER = "https://images.unsplash.com/photo-1522335789203-aabd1fc54bc
 let allProducts = [];
 const filters = { categories: new Set(), search: '' };
 
+// Pincode lists
 const FREE_PINCODES = ['411028','411060','412308','412307','411036','411013'];
 const PORTAR_PINCODES = ['411004','411040','410506','410509','413132','411032','411035','412411','412205','412201','412105','412211','412206','410507','411042','410401','411046','410501','410505','412218','411003','412408','411051','412410','410502','413114','412212','411021','412401','412207','412404','411007','411027','412406','412402','412405','412204','411002','411045','413102','413133','413103','413801','412108','413104','412303','412203','412209','413130','413105','412301','411026','411039','412106','411038','410513','411037','413106','412202','412208','411001','411031','410503','412114','412409','411019','412101','411005','412213','411012','412305','412311','412109','412214','413110','410508','412403','411043','411015','411041','411014','412216','410516','413120','411016','412210','412102','412104','411028','411013','410504','412306','411025','411057','410402','412215','412107','410403','411017','410405','412412','412219','412220','411052','411034','411011','411024','413116','410301','411048','412103','411023','410511','413802','410512','411047','411030','410510','410515','413115','412307','411018','412304','411036','411008','411044','411009','410406','412308','410302','411020','411022','412110','412312','411058','411006','411060'];
 
@@ -147,28 +163,39 @@ document.getElementById('pincodeInput').addEventListener('input', updatePincodeM
 function parseCSV(csv) {
   const lines = csv.trim().split(/\r?\n/);
   const headers = lines.shift().split(',').map(h => h.trim());
+
   return lines.map(line => {
     const values = [];
     let inQuotes = false;
     let value = '';
+
     for (let i = 0; i < line.length; i++) {
       const char = line[i];
-      if (char === '"') { inQuotes = !inQuotes; } 
-      else if (char === ',' && !inQuotes) { values.push(value.trim()); value = ''; } 
-      else { value += char; }
+      if (char === '"') {
+        inQuotes = !inQuotes;
+      } else if (char === ',' && !inQuotes) {
+        values.push(value.trim());
+        value = '';
+      } else {
+        value += char;
+      }
     }
     values.push(value.trim());
+
+    // remove surrounding quotes if any and unescape double quotes
     for (let i = 0; i < values.length; i++) {
       let v = values[i];
-      if (v.startsWith('"') && v.endsWith('"')) { v = v.slice(1, -1).replace(/""/g, '"'); }
+      if (v.startsWith('"') && v.endsWith('"')) {
+        v = v.slice(1, -1).replace(/""/g, '"');
+      }
       values[i] = v;
     }
+
     const obj = {};
     headers.forEach((h, i) => obj[h] = values[i] || '');
     return obj;
   });
 }
-
 function fetchProducts(){
   document.getElementById('spinner').style.display='flex';
   fetch(CSV_URL)
@@ -181,7 +208,7 @@ function fetchProducts(){
         p.category = p.Category || 'Uncategorized';
         p.stock = parseInt(p.Stock||0);
         p.price1pc = parseFloat(p.SellingPrice1pc||0);
-        p.mrp = parseFloat(p.MRP.replace(/[^0-9.]/g,'')); 
+        p.mrp = parseFloat(p.MRP.replace(/[^0-9.]/g,'')); // remove anything not a number/dot
         if (isNaN(p.mrp)) p.mrp = parseFloat(p.price1pc) || 0;
         p.discount1pc = p.Discount1pcPercent || '';
         p.images = p.ImageURL ? p.ImageURL.split('|') : [PLACEHOLDER];
@@ -236,16 +263,10 @@ function renderProducts(){
            (p.Name.toLowerCase().includes(filters.search.toLowerCase()));
   });
 
-  // Apply sorting
-  const sortOption = document.getElementById('sortSelect').value;
-  if(sortOption==='price-asc') filtered.sort((a,b)=>a.price1pc-b.price1pc);
-  else if(sortOption==='price-desc') filtered.sort((a,b)=>b.price1pc-a.price1pc);
-  else if(sortOption==='name-asc') filtered.sort((a,b)=>a.Name.localeCompare(b.Name));
-  else if(sortOption==='name-desc') filtered.sort((a,b)=>b.Name.localeCompare(a.Name));
-
   filtered.forEach(p=>{
     const card = document.createElement('div');
     card.className='product-card';
+
     card.innerHTML = `
       <div class="imgwrap">
         <img src="${p.images[0]}" alt="${p.Name}">
@@ -259,6 +280,7 @@ function renderProducts(){
           <span class="sp">₹${p.price1pc}</span>
           ${p.discount1pc && parseFloat(p.discount1pc) > 0 ? `<span class="discount">${p.discount1pc}% OFF</span>` : ''}
         </div>
+
       </div>
       ${p.stock<=0?'<div class="out-of-stock-overlay">Out of stock</div>':''}
       <div class="card-actions">
@@ -270,22 +292,38 @@ function renderProducts(){
     container.appendChild(card);
   });
 
-  document.getElementById('spinner').style.display='none';
-}
-
-// Search input listener
-document.getElementById('searchInput').addEventListener('input', (e)=>{
+  document.getElementById('searchInput').addEventListener('input', (e) => {
   filters.search = e.target.value;
   renderProducts();
 });
 
-// Sort select listener
-document.getElementById('sortSelect').addEventListener('change', renderProducts);
+  document.getElementById('spinner').style.display='none';
+}
 
 function buyViaWhatsApp(productName, mrp, sp, discount) {
-  const whatsappNumber = '918149520594';
+  const whatsappNumber = '918149520594'; // replace with your number with country code
   const message = `Hello! I want to order the following product:%0A
 Product Name: ${decodeURIComponent(productName)}%0A
 MRP: ₹${mrp}%0A
 SP: ₹${sp}%0A
-Discount: ${discount}%
+Discount: ${discount}%25%0A
+Name: (Please enter your name)%0A
+Address: (Please enter your address)`;
+
+  const url = `https://wa.me/${whatsappNumber}?text=${message}`;
+  window.open(url, '_blank');
+}
+  
+
+// Slider rotation
+const sliderMessages = ["Limited time offer: Up to 40% off", "Clean, cruelty-free formulas"];
+let currentSlide = 0;
+setInterval(()=>{
+  currentSlide = (currentSlide+1)%sliderMessages.length;
+  document.getElementById('sliderMessage').textContent = sliderMessages[currentSlide];
+},4000);
+
+fetchProducts();
+</script>
+</body>
+</html>
